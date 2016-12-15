@@ -78,7 +78,7 @@ method(MCGLRenderer, MCGLRenderer*, initWithShaderCodeString, const char* vcode,
             MCGLUniformVec3,
             
             MCGLUniformMat4,
-            MCGLUniformVec3,
+            MCGLUniformMat3,
             
             MCGLUniformVec3,
             MCGLUniformVec3,
@@ -95,21 +95,21 @@ method(MCGLRenderer, MCGLRenderer*, initWithShaderCodeString, const char* vcode,
             MCGLUniformScalar,
         },
         (const char* []){
-           "view.view",
-           "view.projection",
-           "view.position",
-           "model.model",
-           "model.normal",
-           "light.ambient",
-           "light.diffuse",
-           "light.specular",
-           "light.color",
-           "light.position",
-           "material.ambient",
-           "material.diffuse",
-           "material.specular",
-           "material.dissolve",
-           "material.shininess",
+           "view_view",
+           "view_projection",
+           "view_position",
+           "model_model",
+           "model_normal",
+           "light_ambient",
+           "light_diffuse",
+           "light_specular",
+           "light_color",
+           "light_position",
+           "material_ambient",
+           "material_diffuse",
+           "material_specular",
+           "material_dissolve",
+           "material_shininess",
            "texsampler"
         }, 16);
     return obj;
@@ -140,6 +140,8 @@ method(MCGLRenderer, void, updateNodes, MC3DNode* rootnode)
     
     //update model view projection matrix
     //MCGLContext_submitModelViewProjectionMatrix(0, obj->context, 0);
+
+    glFlush();
 }
 
 method(MCGLRenderer, void, drawNodes, MC3DNode* rootnode)

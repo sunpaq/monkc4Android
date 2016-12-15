@@ -54,7 +54,7 @@ compute(MC3DFrame, frame)
 oninit(MC3DModel)
 {
     if (init(MC3DNode)) {
-        obj->defaultColor = (MCColorf){0.9, 0.9, 0.9, 1.0};
+        obj->defaultColor = (MCColorf){MCFloatF(0.9), MCFloatF(0.9), MCFloatF(0.9), MCFloatF(1.0)};
         obj->defaultExtension = "obj";
         obj->textureOnOff = false;
         
@@ -150,12 +150,12 @@ function(MCMesh*, createMeshWithBATriangles, BATriangle* triangles, size_t trico
 function(void, setDefaultMaterialForNode, MC3DNode* node)
 {
     if (node) {
-        node->material->ambientLightColor  = MCVector3Make(1.0, 1.0, 1.0);
-        node->material->diffuseLightColor  = MCVector3Make(1.0, 1.0, 1.0);
-        node->material->specularLightColor = MCVector3Make(1.0, 1.0, 1.0);
-        node->material->specularLightPower = 32.0f;
+        node->material->ambientLightColor  = MCVector3Make(0.5, 0.5, 0.5);
+        node->material->diffuseLightColor  = MCVector3Make(0.5, 0.5, 0.5);
+        node->material->specularLightColor = MCVector3Make(0.5, 0.5, 0.5);
+        node->material->specularLightPower = 16.0f;
         node->material->dissolve           = 1.0f;
-        
+
         MCStringFill(node->material->tag, "Default");
         //node->material->dataChanged = true;
     }

@@ -131,7 +131,7 @@ method(MC3DScene, void, moveSkyboxCamera, MCFloat deltaFai, MCFloat deltaTht)
 
 method(MC3DScene, void, updateScene, voida)
 {
-    MC3DScene_moveCameraOneStep(0, obj, MCFloatF(0.5), MCFloatF(0.0));
+    MC3DScene_moveCameraOneStep(0, obj, MCFloatF(0.0), MCFloatF(0.0));
     
     if(cpt(isDrawSky)) {
         MCSkybox_update(0, var(skyboxRef), var(renderer)->context);

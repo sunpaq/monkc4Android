@@ -13,8 +13,9 @@
         <!--android:layout_height="wrap_content"-->
         <!--android:text="Hello World!" />-->
 
-    <sapindus.oreisoft.com.sapindus.BEEngineView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <!--<ViewGroup-->
+        <!--android:id="@+id/gl_container"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
 
 </RelativeLayout>

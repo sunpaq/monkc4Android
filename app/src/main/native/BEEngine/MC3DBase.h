@@ -115,7 +115,7 @@ static inline MCMatrix3 MCMatrix3Invert(MCMatrix3 matrix, int* isInvertible) {
     return MCMatrix3Scale(MCMatrix3Transpose(matrix), determinant, determinant, determinant);
 }
 
-static inline MCMatrix3 MCMatrix3InvertAndTranspose(MCMatrix3 matrix, void* isInvertible) {
+static inline MCMatrix3 MCMatrix3InvertAndTranspose(MCMatrix3 matrix, int* isInvertible) {
     return MCMatrix3Transpose(MCMatrix3Invert(matrix, isInvertible));
 }
 

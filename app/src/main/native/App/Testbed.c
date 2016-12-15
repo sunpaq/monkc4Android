@@ -261,7 +261,7 @@ static void teststring()
 void starttest()
 {
     //testBasics();
-    testTrampoline();
+    //testTrampoline();
     //testclass();
     //testparser();
     //testCArrayLinkedList();
@@ -270,5 +270,5 @@ void starttest()
     //testsort();
     //testmath();
     //testtree();
-    teststring();
+    //teststring();
 }

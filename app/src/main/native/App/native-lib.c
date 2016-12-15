@@ -381,7 +381,7 @@ java(void, init, voida)
 
 java(void, openFile, voida)
 {
-    onOpenFile("monkey2");
+    onOpenFile("2");
     error_log("[not a error] JNI openFile called");
 }
 
