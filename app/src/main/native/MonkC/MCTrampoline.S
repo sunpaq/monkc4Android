@@ -116,7 +116,7 @@ _push_jump:
     ret
 #endif
 
-#if defined(__arm64__)
+#if defined(__arm64__) || defined(__aarch64__)
 .text
 #if defined(__MACH__)
 .globl __push_jump
@@ -141,7 +141,8 @@ _push_jump:
     ret
 #endif
 
-#if defined(__armv7s__) || defined(__armv7__) || defined(__armv6__)
+#if defined(__armv7s__) || defined(__armv7__) || defined(__armv6__) \
+|| (defined(__arm__) && !defined(__aarch64__))
 .text
 #if defined(__MACH__)
 .globl __push_jump

@@ -13,11 +13,11 @@ android {
         externalNativeBuild {
             cmake {
                 arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_TOOLCHAIN=clang"
-                cFlags "-std=c99 -D__armv7__ -D__ANDROID__"
+                cFlags "-std=c99"
             }
         }
         ndk {
-            abiFilters 'armeabi-v7a'
+            abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'
         }
     }
     buildTypes {
