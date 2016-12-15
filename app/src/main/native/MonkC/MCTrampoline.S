@@ -61,7 +61,8 @@
     cmpi BF, L, RA, SI --> ConditionField, (32bit=0), reg, immidiate
  
  machine architecher macros:
- 
+ use "<compiler> -E -dM - < /dev/null" to show compiler predefined macros
+
  Apple: __APPLE__ && __MACH__
  Mac OSX: TARGET_OS_MAC == 1
  iOS sim: TARGET_IPHONE_SIMULATOR == 1

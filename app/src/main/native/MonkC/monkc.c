@@ -1046,6 +1046,7 @@ mc_message _response_to_h(MCObject* obj, const char* methodname, MCHash hashval)
  cmpi BF, L, RA, SI --> ConditionField, (32bit=0), reg, immidiate
 
  machine architecher macros:
+ use "<compiler> -E -dM - < /dev/null" to show compiler predefined macros
 
  Apple: __APPLE__ && __MACH__
  Mac OSX: TARGET_OS_MAC == 1
@@ -1071,7 +1072,7 @@ mc_message _response_to_h(MCObject* obj, const char* methodname, MCHash hashval)
 #endif
 
 #if defined(__x86_64__)
-__asm__(".text");
+asm(".text");
 #if defined(__MACH__)
 asm(".globl __push_jump");
 asm(".p2align 4, 0x00");
@@ -1106,7 +1107,7 @@ asm("0:");
 asm("ret");
 #endif
 
-#if defined(__arm64__)
+#if defined(__arm64__) || defined(__aarch64__)
 asm(".text");
 #if defined(__MACH__)
 asm(".globl __push_jump");
@@ -1131,22 +1132,23 @@ asm("0:");
 asm("ret");
 #endif
 
-#if defined(__armv7s__) || defined(__armv7__) || defined(__armv6__)
-__asm__(".text");
+#if defined(__armv7s__) || defined(__armv7__) || defined(__armv6__) || \
+(defined(__arm__) && !defined(__aarch64__))
+asm(".text");
 #if defined(__MACH__)
-__asm__(".globl __push_jump");
-__asm__(".p2align 2, 0x00");
-__asm__("__push_jump:");
+asm(".globl __push_jump");
+asm(".p2align 2, 0x00");
+asm("__push_jump:");
 #else
-__asm__(".globl _push_jump");
-__asm__(".p2align 2, 0x00");
-__asm__("_push_jump:");
+asm(".globl _push_jump");
+asm(".p2align 2, 0x00");
+asm("_push_jump:");
 #endif
-__asm__("\tcmp r0, #0");
-__asm__("\tbeq 0f");
-__asm__("\tbx r0");
-__asm__("0:");
-__asm__("\tbx lr");
+asm("cmp r0, #0");
+asm("beq 0f");
+asm("bx r0");
+asm("0:");
+asm("bx lr");
 #endif
 
 #if defined(__powerpc__) || defined(__ppc__) || defined(__PPC__)
@@ -1156,13 +1158,13 @@ asm(".text");
 asm(".globl _push_jump");
 asm(".align 8");
 asm("_push_jump:");
-asm("\tcmpi 0,0,3,0");
-asm("\tbeq 0f");
-asm("\tldu 12, 0(4)");
-asm("\tmtctr 12");
-asm("\tbctr");
+asm("cmpi 0,0,3,0");
+asm("beq 0f");
+asm("ldu 12, 0(4)");
+asm("mtctr 12");
+asm("bctr");
 asm("0:");
-asm("\tblr");
+asm("blr");
 #endif
 #endif
 */
