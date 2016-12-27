@@ -11,6 +11,7 @@
 #include "monkc.h"
 #include <stdio.h>
 #include "MC3DiOS.h"
+#include "MCJNI.h"
 
 //MCGL Errors
 void MCGLError(const char* errmsg)
@@ -18,19 +19,21 @@ void MCGLError(const char* errmsg)
 	debug_log("MCGLError: %s\n", errmsg);
 }
 
+int getSkyboxOn()
+{
+    return 0;
+}
+
+//call Java
+
 void MCGLStartLoading()
 {
-	debug_log("start loading\n");
+    callJavaInt(BEEngineView, MCGLStartLoading, 0);
 }
 
 void MCGLStopLoading()
 {
-	debug_log("stop loading\n");
-}
-
-int getSkyboxOn()
-{
-    return 0;
+    callJavaInt(BEEngineView, MCGLStopLoading, 0);
 }
 
 #endif

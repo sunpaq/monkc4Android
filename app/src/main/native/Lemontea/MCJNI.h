@@ -45,3 +45,15 @@ you can use 'env' & 'obj' access the JVM environment and Java object proxy
 */
 
 #define JavaStringFromCString(cstr) (*env)->NewStringUTF(env, cstr)
+
+//global JVM instance reference
+static JNIEnv jvm;
+
+static inline jint _callJavaInt(const char* classname, const char* methodname, int value)
+{
+       jclass C = jvm->FindClass(&jvm, classname);
+    jmethodID M = jvm->GetStaticMethodID(&jvm, C, methodname, "(I)I");
+    return jvm->CallStaticIntMethod(&jvm, C, M, (jint)value);
+}
+
+#define callJavaInt(classname, methodname, value) _callJavaInt(#classname, #methodname, value)

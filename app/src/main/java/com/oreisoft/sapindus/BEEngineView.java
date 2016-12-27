@@ -34,6 +34,12 @@ public class BEEngineView extends GLSurfaceView {
     public static native void setAssetManager(Object man);
     public static native void onGestureScale(float scale);
     public static native void onGestureScroll(double x, double y);
+    public static int MCGLStartLoading(int x) {
+        return 0;
+    }
+    public static int MCGLStopLoading(int x) {
+        return 0;
+    }
 
     /*
     * Java Parts

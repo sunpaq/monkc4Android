@@ -349,6 +349,10 @@ java(jstring, nativeRun, voida)
 
 java(void, init, voida)
 {
+    jvm = (*env);
+    callJavaInt(BEEngineView, MCGLStartLoading, 0);
+
+
     const char* gles_version = (const char*)glGetString(GL_VERSION);
     const char* glsl_version = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
     debug_log("GLSL version is %s\n", glsl_version);
@@ -365,6 +369,7 @@ java(void, init, voida)
 
 java(void, openFile, voida)
 {
+    MCGLStartLoading();
     onOpenFile("2");
     error_log("[not a error] JNI openFile called");
 }
@@ -395,5 +400,7 @@ java(void, onGestureScroll, jdouble x, jdouble y)
 {
     onGesturePan(x, y);
 }
+
+
 
 
