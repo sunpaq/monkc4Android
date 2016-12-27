@@ -5,17 +5,7 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="sapindus.oreisoft.com.sapindus.MainActivity">
+    tools:context="com.oreisoft.sapindus.MainActivity">
 
-    <!--<TextView-->
-        <!--android:id="@+id/sample_text"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Hello World!" />-->
-
-    <!--<ViewGroup-->
-        <!--android:id="@+id/gl_container"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent" />-->
 
 </RelativeLayout>

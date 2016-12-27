@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.4.1)
 
 enable_language(ASM C)
-set(MCTrampolineSrc src/main/native/MonkC/MCTrampoline.S)
+set(MCTrampolineSrc src/main/native/MCLib/MCTrampoline.S)
 set_property(SOURCE ${MCTrampolineSrc} PROPERTY LANGUAGE C)
 
-set(MonkCDir           src/main/native/MonkC)
+set(MonkCDir           src/main/native/MCLib)
 set(LemonteaDir        src/main/native/Lemontea)
-set(BEAssetsManagerDir src/main/native/BEAssetsManager)
-set(BEEngineDir        src/main/native/BEEngine)
-set(SOILDir            src/main/native/BEAssetsManager/external/SOIL)
+set(BEAssetsDir        src/main/native/BEAssets)
+set(BEEngineDir        src/main/native/Engine)
+set(SOILDir            src/main/native/BEAssets/external/SOIL)
 set(MCDriverDir        src/main/native/MCDriver)
 set(AppDir             src/main/native/App)
 
@@ -16,12 +16,12 @@ set(AppDir             src/main/native/App)
 aux_source_directory(${MonkCDir}     MonkCSrc)
 aux_source_directory(${LemonteaDir}  LemonteaSrc)
 # BohdiEngine
-aux_source_directory(${BEAssetsManagerDir} BEAssetsManagerSrc)
-aux_source_directory(${BEEngineDir}        BEEngineSrc)
-aux_source_directory(${SOILDir}            SOILSrc)
+aux_source_directory(${BEAssetsDir}  BEAssetsSrc)
+aux_source_directory(${BEEngineDir}  BEEngineSrc)
+aux_source_directory(${SOILDir}      SOILSrc)
 # App
-aux_source_directory(${MCDriverDir}        MCDriverSrc)
-aux_source_directory(${AppDir}             AppSrc)
+aux_source_directory(${MCDriverDir}  MCDriverSrc)
+aux_source_directory(${AppDir}       AppSrc)
 
 add_library( # Sets the name of the library.
              native-lib
@@ -33,7 +33,7 @@ add_library( # Sets the name of the library.
              ${MCTrampolineSrc}
              ${MonkCSrc}
              ${LemonteaSrc}
-             ${BEAssetsManagerSrc}
+             ${BEAssetsSrc}
              ${BEEngineSrc}
              ${SOILSrc}
              ${MCDriverSrc}
@@ -42,7 +42,7 @@ add_library( # Sets the name of the library.
 include_directories(
              ${MonkCDir}
              ${LemonteaDir}
-             ${BEAssetsManagerDir}
+             ${BEAssetsDir}
              ${BEEngineDir}
              ${SOILDir}
              ${MCDriverDir}

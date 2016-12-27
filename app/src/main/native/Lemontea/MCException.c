@@ -25,7 +25,7 @@ void clean_exception_context()
 static inline unsigned _ehash(char *s)
 {
 	unsigned hashval;
-	for(hashval = 0; *s != '\0'; s++)
+	for(hashval = 0; *s != NUL; s++)
 		hashval = *s + 31 * hashval;
 	return (hashval & MAX_EXCEPTION_NUM);
 }
@@ -34,7 +34,7 @@ static unsigned _define_exception(char* s)
 {
 	unsigned val = _ehash(s);
 	if(_exception_list[val] == 1){
-		error_log("your exception name:%s is conflicted please change another name\n", s);
+		error_log("your exception name:%s is collisioned please change another name\n", s);
 		exit(-1);
 	}
 	_exception_list[val] = 1;

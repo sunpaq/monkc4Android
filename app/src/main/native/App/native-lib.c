@@ -2,7 +2,6 @@
 #include <GLES3/gl3.h>
 #include "monkc.h"
 #include "MCJNI.h"
-#include "MCDemo.h"
 #include "MCString.h"
 #include "MC3DiOS.h"
 #include "BEAssetsManager.h"
@@ -341,26 +340,11 @@ void cameraCommand(MC3DiOS_CameraCmd* cmd)
     }
 }
 
-void general(mc_message_arg(MCDemo), int reg1, int reg2, int reg3, int reg4, int reg5, int reg6)
-{
-    debug_log("reg1=%d reg2=%d reg3=%d reg4=%d reg5=%d reg6=%d\n", reg1, reg2, reg3, reg4, reg5, reg6);
-}
-
-char* monkc_runtime() {
-    _push_jump(make_msg(1, general), 1, 2, 3, 4, 5, 6);
-
-    MCString* str = MCString_newWithCString("Goooooooooogle is gooooooooood");
-    MCString* cs  = ff(str, copyCompressedString, 0);
-    release(str);
-    return  cs->buff;
-}
-
-#define java(type, name, ...) jni(Java_sapindus_oreisoft_com_sapindus_BEEngineView, type, name, __VA_ARGS__)
+#define java(type, name, ...) jni(Java_com_oreisoft_sapindus_BEEngineView, type, name, __VA_ARGS__)
 
 java(jstring, nativeRun, voida)
 {
-    const char* cstr = monkc_runtime();
-    return JavaStringFromCString(cstr);
+    return JavaStringFromCString("Hello");
 }
 
 java(void, init, voida)

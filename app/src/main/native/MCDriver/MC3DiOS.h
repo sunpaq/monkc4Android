@@ -10,39 +10,39 @@
 #define MC3DiOS_h
 
 //App lifecycle
-extern void onAppStart();
+void onAppStart();
 
 //User Settings
-extern int getSkyboxOn();
+int getSkyboxOn();
 
 //GL callback
-extern void onRootViewLoad(void* rootview);
-extern void onReceiveMemoryWarning();
-extern void onSetupGL(int windowWidth, int windowHeight);
-extern void onOpenFile(const char* filename);
-extern void onTearDownGL();
-extern void onUpdate(double roll, double yaw, double pitch);
-extern int onDraw();
+void onRootViewLoad(void* rootview);
+void onReceiveMemoryWarning();
+void onSetupGL(int windowWidth, int windowHeight);
+void onOpenFile(const char* filename);
+void onTearDownGL();
+void onUpdate(double roll, double yaw, double pitch);
+int onDraw();
 
 //File callback
-extern void onOpenExternalFile(const char* filepath);
-extern void onOpenFile(const char* filename);
-extern void onOpenFileAsync(const char* filename);
-extern void onOpenFileAndExitThread(const char* filename);
+void onOpenExternalFile(const char* filepath);
+void onOpenFile(const char* filename);
+void onOpenFileAsync(const char* filename);
+void onOpenFileAndExitThread(const char* filename);
 
 //Gesture callback
-extern void onGestureSwip();
-extern void onGesturePan(double x, double y);
-extern void onGesturePinch(double scale);
+void onGestureSwip();
+void onGesturePan(double x, double y);
+void onGesturePinch(double scale);
 
 //Orientation Handling
-extern void onResizeScreen(int windowWidth, int windowHeight);
-extern void onStartStopBtn(int startOrStop);
+void onResizeScreen(int windowWidth, int windowHeight);
+void onStartStopBtn(int startOrStop);
 
 //MCGL Errors
-extern void MCGLError(const char* errmsg);
-extern void MCGLStartLoading();
-extern void MCGLStopLoading();
+void MCGLError(const char* errmsg);
+void MCGLStartLoading();
+void MCGLStopLoading();
 
 typedef enum {
     MC3DiOS_CameraLookAt,
@@ -69,6 +69,6 @@ typedef struct {
     int    lockRotation;
 } MC3DiOS_CameraCmd;
 
-extern void cameraCommand(MC3DiOS_CameraCmd* cmd);
+void cameraCommand(MC3DiOS_CameraCmd* cmd);
 
 #endif /* MC3DiOS_h */

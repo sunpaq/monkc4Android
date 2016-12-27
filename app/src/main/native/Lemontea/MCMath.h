@@ -133,8 +133,7 @@ typedef union {
         float m20, m21, m22;
     };
     float m[9];
-} MCMatrix3;
-//__attribute__((aligned(16)))
+} __attribute__((aligned(16))) MCMatrix3;
 
 typedef union {
     struct
@@ -145,8 +144,7 @@ typedef union {
         float m30, m31, m32, m33;
     };
     float m[16];
-} MCMatrix4;
-//__attribute__((aligned(16)))
+} __attribute__((aligned(16))) MCMatrix4;
 
 static const MCMatrix3 MCMatrix3Identity = {
     1.0f, 0.0f, 0.0f,
@@ -223,6 +221,10 @@ MCInline MCVector3 MCVector3Cross(MCVector3 v1, MCVector3 v2) {
         v1.x*v2.y - v2.x*v1.y};
 }
 
+MCInline MCVector3 MCNormalOfTriangle(MCVector3 v1, MCVector3 v2, MCVector3 v3) {
+    return MCVector3Cross(MCVector3Sub(v2, v1), MCVector3Sub(v3, v1));
+}
+
 MCInline MCBool MCMatrix3Equal(MCMatrix3* l, MCMatrix3* r)
 {
     for (int i=0; i<9; i++) {
@@ -295,5 +297,13 @@ utility(MCMath, double, accumulateMind, double* result, double value);
 
 //Chebyshev distance
 utility(MCMath, unsigned, chebyshevDiatance, MCVector2i A, MCVector2i B);
+//Factorial
+utility(MCMath, unsigned, factorialOf, unsigned N);
+//Permutation
+utility(MCMath, unsigned, KpermutationsOfN, unsigned K, unsigned N);
+//Combination
+utility(MCMath, unsigned, KcombinationsOfN, unsigned K, unsigned N);
+
+
 
 #endif
