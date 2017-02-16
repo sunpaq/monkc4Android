@@ -51,6 +51,17 @@ compute(MC3DFrame, frame)
     return allframe;
 }
 
+compute(double, maxlength)
+{
+    as(MC3DModel);
+    double max = 0;
+    MC3DFrame frame = cpt(frame);
+    MCMath_accumulateMaxd(&max, frame.xmax - frame.xmin);
+    MCMath_accumulateMaxd(&max, frame.ymax - frame.ymin);
+    MCMath_accumulateMaxd(&max, frame.zmax - frame.zmin);
+    return max;
+}
+
 oninit(MC3DModel)
 {
     if (init(MC3DNode)) {
@@ -59,6 +70,7 @@ oninit(MC3DModel)
         obj->textureOnOff = false;
         
         obj->frame = frame;
+        obj->maxlength = maxlength;
         obj->lastSavedFrame = (MC3DFrame){0,0,0,0,0,0};
         return obj;
     }else{
@@ -78,13 +90,21 @@ function(void, meshLoadFaceElement, MCMesh* mesh, BAObj* buff, BAFaceElement e, 
 
     if (e.vi <= 0) {
         error_log("MC3DFileParser: invalide vertex data!\n");
+        return;
     }else{
         v = buff->vertexbuff[e.vi-1];
     }
     
-    if (e.ni <= 0) {
+    if (buff->shouldCalculateNormal) {
         n = MCNormalOfTriangle(buff->vertexbuff[e.vi], buff->vertexbuff[e.vi+1], buff->vertexbuff[e.vi+2]);
         mesh->calculatedNormal = true;
+    }
+    
+    if (e.ni <= 0) {
+        if (!buff->shouldCalculateNormal) {
+            n = MCNormalOfTriangle(buff->vertexbuff[e.vi], buff->vertexbuff[e.vi+1], buff->vertexbuff[e.vi+2]);
+            mesh->calculatedNormal = true;
+        }
     }else{
         n = MCVector3From4(buff->normalbuff[e.ni-1]);
     }
@@ -144,6 +164,8 @@ function(void, setDefaultMaterialForNode, MC3DNode* node)
         node->material->specularLightColor = MCVector3Make(0.5, 0.5, 0.5);
         node->material->specularLightPower = 16.0f;
         node->material->dissolve           = 1.0f;
+        node->material->hidden             = 0;
+        node->material->illum              = 2;
         
         MCStringFill(node->material->tag, "Default");
         node->material->dataChanged = true;
@@ -162,6 +184,8 @@ function(void, setMaterialForNode, MC3DNode* node, BAMaterial* mtl)
         node->material->specularLightColor = specular;
         node->material->specularLightPower = mtl->specularExponent;
         node->material->dissolve           = mtl->dissolveFactor;
+        node->material->hidden             = mtl->hidden;
+        node->material->illum              = mtl->illumModelNum;
         
         MCStringFill(node->material->tag, mtl->name);
         node->material->dataChanged = true;
@@ -181,13 +205,17 @@ function(MC3DModel*, initModel, BAObj* buff, size_t fcursor, size_t iusemtl, siz
         size_t tricount = trianglization(triangles, faces, facecount, buff->vertexbuff);
         MCMesh* mesh = createMeshWithBATriangles(0, null, triangles, tricount, buff, color);
         
-        model->Super.material = new(MCMatrial);
+        model->Super.material = new(MCMaterial);
         model->Super.texture  = null;
         MCLinkedList_addItem(0, model->Super.meshes, (MCItem*)mesh);
         
         //set mtl
         if (mtl && buff->usemtlcount > 0) {
             setMaterialForNode(0, null, &model->Super, mtl);
+            //set texture
+            if (mtl->diffuseMapName[0]) {
+                model->Super.texture = MCTexture_initWithFileName(0, new(MCTexture), mtl->diffuseMapName);
+            }
         }else{
             setDefaultMaterialForNode(0, null, &model->Super);
         }
@@ -250,8 +278,10 @@ method(MC3DModel, MC3DModel*, initWithFileNameColor, const char* name, MCColorf 
 {
     if (obj) {
         MCStringFill(obj->name, name);
-        char path[PATH_MAX];
-        MCFileGetPath(name, "obj", path);
+        char path[PATH_MAX] = {};
+        if (MCFileGetPath(name, "obj", path)) {
+            return null;
+        }
         debug_log("MC3DModel - find path: %s\n", path);
         return MC3DModel_initWithFilePathColor(0, obj, path, color);
     }else{

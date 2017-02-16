@@ -25,6 +25,7 @@ class(MCDirector, MCObject,
       int currentHeight;
       
       computing(MCCamera*, cameraHandler);
+      computing(MCGLContext*, contextHandler);
 );
 
 method(MCDirector, void, bye, voida);
@@ -39,6 +40,7 @@ method(MCDirector, void, popScene, voida);
 method(MCDirector, void, resizeAllScene, int width, int height);
 
 method(MCDirector, void, addModel, MC3DModel* model);
+method(MCDirector, void, addNode, MC3DNode* node);
 
 method(MCDirector, void, cameraFocusOn, MCVector3 vertex);
 method(MCDirector, void, printDebugInfo, voida);

@@ -21,16 +21,12 @@
 1   Color on and Ambient on 
 2   Highlight on 
 3   Reflection on and Ray trace on 
-4   Transparency: Glass on 
-Reflection: Ray trace on 
+4   Transparency: Glass on Reflection: Ray trace on
 5   Reflection: Fresnel on and Ray trace on 
-6   Transparency: Refraction on 
-Reflection: Fresnel off and Ray trace on 
-7   Transparency: Refraction on 
-Reflection: Fresnel on and Ray trace on 
+6   Transparency: Refraction on Reflection: Fresnel off and Ray trace on
+7   Transparency: Refraction on Reflection: Fresnel on and Ray trace on
 8   Reflection on and Ray trace off 
-9   Transparency: Glass on 
-Reflection: Ray trace off 
+9   Transparency: Glass on Reflection: Ray trace off
 10  Casts shadows onto invisible surfaces
 */
 
@@ -38,6 +34,7 @@ typedef enum {
     Ambient = 0,
     Diffuse,
     Specular,
+    Emissive,
     //transmission filter
     TFilter
 } BALightType;
@@ -125,8 +122,10 @@ typedef struct {
 typedef struct {
     //newmtl
     char name[256];
+    //map_Kd
+    char diffuseMapName[256];
     //light color
-    BALightColor lightColors[4];
+    BALightColor lightColors[5];
     //illumination model 0->10
     int illumModelNum;
     //dissolve (d/d -halo)
@@ -142,6 +141,8 @@ typedef struct {
     BALightColorMap lightColorMaps[10];
     BAScalarMap     scalarMaps[10];
     BAReflectionMap reflectionMaps[10];
+    //extension
+    int hidden;
 } BAMaterial;
 
 MCInline MCVector3 BAMaterialLightColor(BAMaterial* mat, BALightType type) {

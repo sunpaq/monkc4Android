@@ -124,9 +124,9 @@ void onOpenFile(const char* filename)
             //ff(director->skyboxThread, start, 0);
         }
 
-        //openFileAsync(filename);
+        openFileAsync(filename);
+        //openFile(filename);
 
-        openFile(filename);
         ff(director->lastScene->rootnode, setAllVisible, true);
 
         ff(director, printDebugInfo, 0);
@@ -151,6 +151,7 @@ void onSetupGL(int windowWidth, int windowHeight)
         debug_log("onSetupGL main scene created current screen size: %dx%d\n", windowWidth, windowHeight);
 
         mainScene->skyboxShow = getSkyboxOn();
+
         if (cubtex != null && mainScene->skyboxShow) {
             MCSkybox* skybox = MCSkybox_initWithCubeTexture(0, new(MCSkybox), cubtex, MCRatioMake(windowWidth, windowHeight));
             mainScene->skyboxRef = skybox;
@@ -178,21 +179,21 @@ void onTearDownGL()
     director = null;
 }
 
-void onUpdate(double roll, double yaw, double pitch)
+void onUpdate(double roll, double yaw, double pitch, double w)
 {
     //printf("sensor data: roll=%f yaw=%f pitch=%f\n", roll, yaw, pitch);
     //MCLogTypeSet(MC_SILENT);
     if (director != null) {
 
-        if (computed(director->lastScene, isDrawSky)) {
-            if (director->currentWidth < director->currentHeight) {
-                MCSkyboxCamera_setAttitude(0, director->lastScene->skyboxRef->camera,
-                                           MCFloatF(roll*360), MCFloatF((pitch-1)*45));
-            }else{
-                MCSkyboxCamera_setAttitude(0, director->lastScene->skyboxRef->camera,
-                                           MCFloatF(pitch*360), MCFloatF((roll-1)*45));
-            }
-        }
+//        if (computed(director->lastScene, isDrawSky)) {
+//            if (director->currentWidth < director->currentHeight) {
+//                MCSkyboxCamera_setAttitude(0, director->lastScene->skyboxRef->camera,
+//                                           MCFloatF(roll*360), MCFloatF((pitch-1)*45));
+//            }else{
+//                MCSkyboxCamera_setAttitude(0, director->lastScene->skyboxRef->camera,
+//                                           MCFloatF(pitch*360), MCFloatF((roll-1)*45));
+//            }
+//        }
 
         MCDirector_updateAll(0, director, 0);
     }
@@ -340,11 +341,16 @@ void cameraCommand(MC3DiOS_CameraCmd* cmd)
     }
 }
 
-#define java(type, name, ...) jni(Java_com_oreisoft_sapindus_BEEngineView, type, name, __VA_ARGS__)
+#define java(type, name, ...) jni(Java_com_oreisoft_sapindus_MainActivity, type, name, __VA_ARGS__)
 
 java(jstring, nativeRun, voida)
 {
     return JavaStringFromCString("Hello");
+}
+
+java(void, onAppStart, voida)
+{
+    onAppStart();
 }
 
 java(void, init, voida)
@@ -377,7 +383,7 @@ java(void, resize, jint width, jint height)
 
 java(void, step, voida)
 {
-    onUpdate(0,0,0);
+    onUpdate(0,0,0,0);
     onDraw();
 }
 

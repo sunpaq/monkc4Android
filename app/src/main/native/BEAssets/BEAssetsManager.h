@@ -28,13 +28,14 @@ class(BE2DTextureData, MCObject,
       unsigned RGBA;
       
       //input
-      unsigned type;
+      //unsigned type;
       char* path;
       
       //output
       unsigned char* raw;
       int width;
       int height;
+      int channels;
 );
 
 utility(BE2DTextureData, BE2DTextureData*, newWithPathType, const char* path, unsigned type);

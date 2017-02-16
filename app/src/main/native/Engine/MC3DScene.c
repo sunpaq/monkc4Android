@@ -78,12 +78,15 @@ method(MC3DScene, MC3DScene*, initWithWidthHeightVSourceFSource, unsigned width,
 method(MC3DScene, MC3DScene*, initWithWidthHeightVNameFName, unsigned width, unsigned height,
        const char* vname, const char* fname)
 {
-    char path[LINE_MAX];
-    MCFileGetPath(vname, "vsh", path);
-    const char* vsource = MCFileCopyContentWithPath(path);
+    char vpath[LINE_MAX] = {};
+    if (MCFileGetPath(vname, "vsh", vpath))
+        return null;
+    const char* vsource = MCFileCopyContentWithPath(vpath);
     
-    MCFileGetPath(vname, "fsh", path);
-    const char* fsource = MCFileCopyContentWithPath(path);
+    char fpath[LINE_MAX] = {};
+    if (MCFileGetPath(fname, "fsh", fpath))
+        return null;
+    const char* fsource = MCFileCopyContentWithPath(fpath);
     
     //debug_log("MC3DScene vsource: %s", vsource);
     //debug_log("MC3DScene fsource: %s", fsource);
@@ -125,13 +128,13 @@ method(MC3DScene, void, moveCameraOneStep, MCFloat deltaFai, MCFloat deltaTht)
 method(MC3DScene, void, moveSkyboxCamera, MCFloat deltaFai, MCFloat deltaTht)
 {
     if (cpt(isDrawSky)) {
-        MCSkyboxCamera_move(0, var(skyboxRef)->camera, deltaFai, deltaTht);
+        //MCSkyboxCamera_move(0, var(skyboxRef)->camera, deltaFai, deltaTht);
     }
 }
 
 method(MC3DScene, void, updateScene, voida)
 {
-    MC3DScene_moveCameraOneStep(0, obj, (MCFloat)0.5, (MCFloat)0.0);
+    //MC3DScene_moveCameraOneStep(0, obj, (MCFloat)0.5, (MCFloat)0.0);
     
     if(cpt(isDrawSky)) {
         MCSkybox_update(0, var(skyboxRef), var(renderer)->context);

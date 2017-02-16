@@ -15,25 +15,19 @@ import android.view.ScaleGestureDetector;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import static com.oreisoft.sapindus.MainActivity.init;
+import static com.oreisoft.sapindus.MainActivity.onGestureScale;
+import static com.oreisoft.sapindus.MainActivity.onGestureScroll;
+import static com.oreisoft.sapindus.MainActivity.openFile;
+import static com.oreisoft.sapindus.MainActivity.resize;
+import static com.oreisoft.sapindus.MainActivity.setAssetManager;
+import static com.oreisoft.sapindus.MainActivity.step;
+
 /**
  * Created by sunyuli on 2016/12/11.
  */
 
 public class BEEngineView extends GLSurfaceView {
-
-    // Used to load the 'native-lib' library on application startup.
-    static {
-        System.loadLibrary("native-lib");
-    }
-
-    public static native String nativeRun();
-    public static native void init();
-    public static native void openFile();
-    public static native void resize(int width, int height);
-    public static native void step();
-    public static native void setAssetManager(Object man);
-    public static native void onGestureScale(float scale);
-    public static native void onGestureScroll(double x, double y);
 
     /*
     * Java Parts

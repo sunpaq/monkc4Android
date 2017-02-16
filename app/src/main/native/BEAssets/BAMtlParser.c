@@ -16,13 +16,15 @@
 //return face count
 MCInline size_t processMtlLine(BAMtlLibrary* lib, const char* linebuff)
 {
+    //debug_log("processMtlLine:%s\n", linebuff);
+    
     //pointers
     BAMaterial* material;
     
     //MCToken token;
     MCToken token;
     
-    char word[256];
+    char word[256] = {};
     const char* remain = linebuff;
     while (!isNewLine(remain) && *remain != NUL) {
         token = tokenize(nextWord(&remain, word));
@@ -31,31 +33,75 @@ MCInline size_t processMtlLine(BAMtlLibrary* lib, const char* linebuff)
             case MCTokenIdentifier:
                 if (MCStringEqualN(word, "newmtl", 6)) {
                     token = tokenize(nextWord(&remain, word));
-                    if (token.type == MCTokenIdentifier) {
+                    if (token.type == MCTokenIdentifier || token.type == MCTokenFilename) {
                         lib->materialCursor++;
                         material = currentMaterial(lib);
                         MCStringFill(material->name, token.value.Word);
                         continue;
                     }
                 }
+                //texture
+                else if (MCStringEqualN(word, "map_Ka", 6)) {
+                    return 0;//next line
+                }
+                else if (MCStringEqualN(word, "map_Kd", 6)) {
+                    char name[256] = {};
+                    material = currentMaterial(lib);
+                    if (material && MCString_filenameFromPath(remain, &name)) {
+                        MCStringFill(material->diffuseMapName, name);
+                    } else {
+                        error_log("BAMtlParser - can not get filename form path: %s\n", remain);
+                    }
+                    return 0;//next line
+                }
+                else if (MCStringEqualN(word, "map_Ks", 6)) {
+                    return 0;//next line
+                }
+                else if (MCStringEqualN(word, "map_Ke", 6)) {
+                    return 0;//next line
+                }
                 //LSLightColor
+                else if (MCStringEqualN(word, "illum", 5)) {
+                    token = tokenize(nextWord(&remain, word));
+                    material = currentMaterial(lib);
+                    if (material) {
+                        if (token.type == MCTokenIdentifier) {
+                            if (MCStringEqualN(token.value.Word, "illum_", 6)) {
+                                char* num = &token.value.Word[6];
+                                int n = atoi(num);
+                                if (n >= 0 && n <= 10) {
+                                    material->illumModelNum = n;
+                                }
+                            }
+                        }
+                        else if (token.type == MCTokenInteger) {
+                            int n = (int)token.value.Integer;
+                            if (n >= 0 && n <= 10) {
+                                material->illumModelNum = n;
+                            }
+                        }
+                    }
+                }
                 //Ka|Kd|Ks|Tf [xyz|spectral] rx gy bz | [file.rfl factor]
                 else if (MCStringEqualN(word, "K", 1) || MCStringEqualN(word, "Tf", 2)) {
                     BALightColor* light = null;
                     if (MCStringEqualN(word, "Tf", 2)) {
-                        light = &currentMaterial(lib)->lightColors[TFilter];
+                        light = &(currentMaterial(lib)->lightColors[TFilter]);
                     }
                     else if (MCStringEqualN(word, "Ka", 2)) {
-                        light = &currentMaterial(lib)->lightColors[Ambient];
+                        light = &(currentMaterial(lib)->lightColors[Ambient]);
                     }
                     else if (MCStringEqualN(word, "Kd", 2)) {
-                        light = &currentMaterial(lib)->lightColors[Diffuse];
+                        light = &(currentMaterial(lib)->lightColors[Diffuse]);
                     }
                     else if (MCStringEqualN(word, "Ks", 2)) {
-                        light = &currentMaterial(lib)->lightColors[Specular];
+                        light = &(currentMaterial(lib)->lightColors[Specular]);
+                    }
+                    else if (MCStringEqualN(word, "Ke", 2)) {
+                        light = &(currentMaterial(lib)->lightColors[Emissive]);
                     }
                     if (!light) {
-                        error_log("BAMtlParser - currentMaterial() is null\n");
+                        error_log("BAMtlParser - [%s] not light Ka/Kd/Ks\n", word);
                         return 0;
                     }
                     light->Ctype = RGB;
@@ -86,7 +132,7 @@ MCInline size_t processMtlLine(BAMtlLibrary* lib, const char* linebuff)
                     //float value next
                     else if (token.type == MCTokenFloat || token.type == MCTokenInteger) {
                         if (light->Ctype != SpectralFile) {
-                            double buff[3];
+                            double buff[3] = {};
                             size_t n = nextNumbersAsFloat(&remain, buff);
                             if (n >= 3) {
                                 light->data.rgbxyz[0] = buff[0];
@@ -120,15 +166,28 @@ MCInline size_t processMtlLine(BAMtlLibrary* lib, const char* linebuff)
                     //state = LSScalar;
                 }
                 else if (MCStringEqualN(word, "d", 1)) {
-                    material = currentMaterial(lib);
                     token = tokenize(nextWord(&remain, word));
-                    if (token.type == MCTokenFloat) {
-                        material->dissolveFactor = (double)token.value.Double;
-                    }
-                    if (token.type == MCTokenInteger) {
-                        material->dissolveFactor = (double)token.value.Integer;
+                    material = currentMaterial(lib);
+                    if (material) {
+                        if (token.type == MCTokenFloat) {
+                            material->dissolveFactor = (double)token.value.Double;
+                        }
+                        if (token.type == MCTokenInteger) {
+                            material->dissolveFactor = (double)token.value.Integer;
+                        }
                     }
                     continue;
+                }
+                else if (MCStringEqualN(word, "ext_hidden", 10)) {
+                    token = tokenize(nextWord(&remain, word));
+                    material = currentMaterial(lib);
+                    if (material) {
+                        if (token.type == MCTokenIdentifier && MCStringEqualN(token.value.Word, "off", 3)) {
+                            material->hidden = 0;
+                        }else{
+                            material->hidden = 1;
+                        }
+                    }
                 }
                 else {
                     
@@ -147,7 +206,7 @@ MCInline size_t processMtlLine(BAMtlLibrary* lib, const char* linebuff)
 
 BAMtlLibrary* BAMtlLibraryNew(const char* filename)
 {
-    char path[LINE_MAX];
+    char path[LINE_MAX] = {};
     if(MCFileGetPath(filename, "mtl", path)) {
         return null;
     }
@@ -164,7 +223,8 @@ BAMtlLibrary* BAMtlLibraryNew(const char* filename)
         char line[LINE_MAX];
         char* c = (char*)assetbuff;
         while (*c!=NUL) {
-            if(*c == MCNewLineN || *c == MCNewLineR) {
+            //skip '\n' '\r\n' '\t' ' '
+            if (*c==MCNewLineN || *c==MCNewLineR || *c==MCTab || *c==MCWhiteSpace) {
                 c++; continue;
             }
             for (int i=0; !isNewLine(c); c++) {
