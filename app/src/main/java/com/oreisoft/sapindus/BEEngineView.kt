@@ -16,14 +16,16 @@ import javax.microedition.khronos.opengles.GL10
 
 class BEEngineView(context: Context) : GLSurfaceView(context) {
 
+    private val TAG = "BEEngineView"
+    private val DEBUG = true
+
     private val mScaleDetector: ScaleGestureDetector
     private val mScrollDetector: GestureDetector
     private var mScaleFactor = 1f
 
-    private var sharedContext: Context? = null
-
     init {
-        sharedContext = context
+        BERenderer.setAssetManager(context.applicationContext.assets)
+
         // Pick an EGLConfig with RGBA8 color, 24-bit depth, no stencil,
         // supporting OpenGL ES 3.0 or later backwards-compatible versions.
         setEGLContextClientVersion(3)
@@ -51,11 +53,10 @@ class BEEngineView(context: Context) : GLSurfaceView(context) {
 
     override fun onResume() {
         super.onResume()
-        BERenderer.setAssetManager(sharedContext!!.applicationContext.assets)
-        //openFile();
     }
 
     private class Renderer(private val context: Context) : GLSurfaceView.Renderer {
+        private val TAG = "BEEngineView.Renderer"
 
         override fun onDrawFrame(gl: GL10) {
             BERenderer.render()
@@ -63,7 +64,6 @@ class BEEngineView(context: Context) : GLSurfaceView(context) {
         }
 
         override fun onSurfaceCreated(gl10: GL10, eglConfig: javax.microedition.khronos.egl.EGLConfig) {
-            BERenderer.setAssetManager(context.applicationContext.assets)
             BERenderer.init()
         }
 
@@ -87,17 +87,5 @@ class BEEngineView(context: Context) : GLSurfaceView(context) {
             return true
         }
     }
-
-    companion object {
-
-
-        /*
-    * Java Parts
-    * */
-
-        private val TAG = "BEEngineView"
-        private val DEBUG = true
-    }
-
 
 }
