@@ -341,7 +341,7 @@ void cameraCommand(MC3DiOS_CameraCmd* cmd)
     }
 }
 
-#define java(type, name, ...) jni(Java_com_oreisoft_sapindus_MainActivity, type, name, __VA_ARGS__)
+#define java(type, name, ...) jni(Java_com_oreisoft_sapindus_BEEngineView, type, name, __VA_ARGS__)
 
 java(jstring, nativeRun, voida)
 {

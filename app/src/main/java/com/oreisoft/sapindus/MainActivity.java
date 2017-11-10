@@ -11,20 +11,7 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    // Used to load the 'native-lib' library on application startup.
-    static {
-        System.loadLibrary("native-lib");
-    }
 
-    public static native String nativeRun();
-    public static native void onAppStart();
-    public static native void init();
-    public static native void openFile();
-    public static native void resize(int width, int height);
-    public static native void step();
-    public static native void setAssetManager(Object man);
-    public static native void onGestureScale(float scale);
-    public static native void onGestureScroll(double x, double y);
 
     BEEngineView mView = null;
 
