@@ -341,7 +341,7 @@ void cameraCommand(MC3DiOS_CameraCmd* cmd)
     }
 }
 
-#define java(type, name, ...) jni(Java_com_oreisoft_sapindus_MainActivity, type, name, __VA_ARGS__)
+#define java(type, name, ...) jni(Java_com_oreisoft_sapindus_BERenderer, type, name, __VA_ARGS__)
 
 java(jstring, nativeRun, voida)
 {
@@ -381,7 +381,7 @@ java(void, resize, jint width, jint height)
     error_log("[not a error] JNI resize called");
 }
 
-java(void, step, voida)
+java(void, render, voida)
 {
     onUpdate(0,0,0,0);
     onDraw();

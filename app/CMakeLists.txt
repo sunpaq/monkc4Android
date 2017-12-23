@@ -24,7 +24,7 @@ aux_source_directory(${MCDriverDir}  MCDriverSrc)
 aux_source_directory(${AppDir}       AppSrc)
 
 add_library( # Sets the name of the library.
-             native-lib
+             native_renderer
 
              # Sets the library as a shared library.
              SHARED
@@ -54,7 +54,7 @@ find_library(gles-lib GLESv3)
 find_library(android-lib android)
 
 target_link_libraries( # Specifies the target library.
-                       native-lib
+                       native_renderer
 
                        # Links the target library to the log library
                        ${log-lib}
