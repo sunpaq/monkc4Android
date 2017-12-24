@@ -118,6 +118,10 @@ void onReceiveMemoryWarning()
 
 void onOpenFile(const char* filename)
 {
+    if (director == null) {
+        onSetupGL(640, 480);
+    }
+
     if (filename != null) {
         if (director->lastScene->skyboxRef != null) {
             //ff(director->skyboxThread, initWithFPointerArgument, asyncReadSkybox, null);
@@ -341,17 +345,7 @@ void cameraCommand(MC3DiOS_CameraCmd* cmd)
     }
 }
 
-#define java(type, name, ...) jni(Java_com_oreisoft_sapindus_BERenderer, type, name, __VA_ARGS__)
-
-java(jstring, nativeRun, voida)
-{
-    return JavaStringFromCString("Hello");
-}
-
-java(void, onAppStart, voida)
-{
-    onAppStart();
-}
+#define java(type, name, ...) jni(Java_com_oreisoft_beengine_BERenderer, type, name, __VA_ARGS__)
 
 java(void, init, voida)
 {
@@ -369,9 +363,11 @@ java(void, init, voida)
     }
 }
 
-java(void, openFile, voida)
+java(void, openFile, jstring name)
 {
-    onOpenFile("2");
+    const char* f = CStringFromJavaString(name);
+    onOpenFile(f);
+    CStringRelease(name, f);
     error_log("[not a error] JNI openFile called");
 }
 
