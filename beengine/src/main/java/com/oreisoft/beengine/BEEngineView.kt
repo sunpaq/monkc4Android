@@ -1,4 +1,4 @@
-package com.oreisoft.sapindus
+package com.oreisoft.beengine
 
 import android.content.Context
 import android.opengl.GLSurfaceView
@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
+import android.view.View
 
 import javax.microedition.khronos.opengles.GL10
 
@@ -14,7 +15,7 @@ import javax.microedition.khronos.opengles.GL10
  * Created by sunyuli on 2016/12/11.
  */
 
-class BEEngineView(context: Context) : GLSurfaceView(context) {
+open class BEEngineView(context: Context) : GLSurfaceView(context) {
 
     private val TAG = "BEEngineView"
     private val DEBUG = true
@@ -47,12 +48,23 @@ class BEEngineView(context: Context) : GLSurfaceView(context) {
         return true
     }
 
-    override fun onPause() {
-        super.onPause()
+    fun hideSystemUI() {
+        // Set the IMMERSIVE flag.
+        // Set the content to appear under the system bars so that the content
+        // doesn't resize when the system bars hide and show.
+        this.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                or View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
     }
 
-    override fun onResume() {
-        super.onResume()
+    /**
+     * call this method after container Activity onWindowFocusChanged() called
+     * */
+    fun loadModel(named: String) {
+        BERenderer.openFile(named)
     }
 
     private class Renderer(private val context: Context) : GLSurfaceView.Renderer {
@@ -70,7 +82,6 @@ class BEEngineView(context: Context) : GLSurfaceView(context) {
         override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
             Log.v(TAG, "resize to " + width + "x" + height)
             BERenderer.resize(width, height)
-            BERenderer.openFile()
         }
     }
 

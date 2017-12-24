@@ -1,4 +1,4 @@
-package com.oreisoft.sapindus
+package com.oreisoft.beengine
 
 /**
  * Created by sunyuli on 11/10/2017 AD.
@@ -10,10 +10,8 @@ object BERenderer {
         System.loadLibrary("native_renderer")
     }
 
-    external fun nativeRun(): String
-    external fun onAppStart()
     external fun init()
-    external fun openFile()
+    external fun openFile(name: String)
     external fun resize(width: Int, height: Int)
     external fun render()
     external fun setAssetManager(man: Any)

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/beengine/beengine.iml" filepath="$PROJECT_DIR$/beengine/beengine.iml" />
       <module fileurl="file://$PROJECT_DIR$/monkc4Android.iml" filepath="$PROJECT_DIR$/monkc4Android.iml" />
     </modules>
   </component>
