@@ -123,17 +123,13 @@ void onOpenFile(const char* filename)
     }
 
     if (filename != null) {
-        if (director->lastScene->skyboxRef != null) {
+        //if (director->lastScene->skyboxRef != null) {
             //ff(director->skyboxThread, initWithFPointerArgument, asyncReadSkybox, null);
             //ff(director->skyboxThread, start, 0);
-        }
+        //}
 
         openFileAsync(filename);
         //openFile(filename);
-
-        ff(director->lastScene->rootnode, setAllVisible, true);
-
-        ff(director, printDebugInfo, 0);
     }
 }
 
@@ -356,9 +352,9 @@ java(void, init, voida)
         onTearDownGL();
         onRootViewLoad(null);
         onSetupGL(1080, 1766);
-        error_log("[not a error] setup OpenGL ES 3");
+        printf("[not a error] setup OpenGL ES 3");
     } else {
-        error_log("Unsupported OpenGL ES version");
+        printf("Unsupported OpenGL ES version");
         exit(0);
     }
 }
