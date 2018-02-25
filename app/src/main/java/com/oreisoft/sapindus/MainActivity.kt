@@ -17,7 +17,7 @@ class MainActivity : BEGLActivity() {
     override fun onBEEnginePrepared() {
         beview?.let {
             it.loadModel("2")
-            it.hideSystemUI()
+            //it.hideSystemUI()
         }
     }
 
