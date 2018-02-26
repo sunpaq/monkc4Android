@@ -26,7 +26,6 @@
 #ifndef MCGLRenderer_h
 #define MCGLRenderer_h
 
-#include <stdio.h>
 #include "monkc.h"
 #include "MCGLBase.h"
 #include "MC3DNode.h"
@@ -34,27 +33,6 @@
 #include "MCMesh.h"
 #include "MCMaterial.h"
 #include "MCTexture.h"
-
-//uniform mat4  view.view;
-//uniform mat4  view.projection;
-//uniform vec3  view.position;
-
-//uniform mat4  model.model;
-//uniform mat3  model.normal;
-
-//uniform vec3 light.ambient;
-//uniform vec3 light.diffuse;
-//uniform vec3 light.specular;
-//uniform vec3 light.color;
-//uniform vec3 light.position;
-
-//uniform vec3 material.ambient;
-//uniform vec3 material.diffuse;
-//uniform vec3 material.specular;
-//uniform int  material.dissolve;
-//uniform int  material.shininess;
-
-//uniform sampler2D texsampler;
 
 MCGlobalKey view_view       = "view_view";
 MCGlobalKey view_projection = "view_projection";
@@ -75,7 +53,8 @@ MCGlobalKey material_specular  = "material_specular";
 MCGlobalKey material_dissolve  = "material_dissolve";
 MCGlobalKey material_shininess = "material_shininess";
 
-MCGlobalKey texsampler = "texsampler";
+MCGlobalKey diffuse_sampler = "diffuse_sampler";
+MCGlobalKey specular_sampler = "specular_sampler";
 
 class(MCGLRenderer, MCObject,
       MCGLContext* context;
@@ -84,6 +63,7 @@ class(MCGLRenderer, MCObject,
 method(MCGLRenderer, void, bye, voida);
 method(MCGLRenderer, MCGLRenderer*, initWithShaderCodeString, const char* vcode, const char* fcode);
 method(MCGLRenderer, MCGLRenderer*, initWithShaderFileName, const char* vshader, const char* fshader);
+method(MCGLRenderer, MCGLRenderer*, initWithDefaultShader, voida);
 //draw
 method(MCGLRenderer, void, updateNodes, MC3DNode* rootnode);
 method(MCGLRenderer, void, drawNodes, MC3DNode* rootnode);

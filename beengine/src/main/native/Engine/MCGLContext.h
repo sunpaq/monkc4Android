@@ -9,7 +9,6 @@
 #ifndef MCGLContext_h
 #define MCGLContext_h
 
-#include <stdio.h>
 #include "monkc.h"
 #include "MCMath.h"
 #include "MCGLBase.h"
@@ -22,18 +21,14 @@ class(MCGLContext, MCObject,
       GLuint pid;
       double cameraRatio;
       
-      MCMatrix4 boxViewMatrix;
-      MCMatrix4 boxProjectionMatrix;
-      double boxCameraRatio;
-      
       MCGLUniform uniforms[MAX_UNIFORM_NUM];
       MCBool uniformsDirty[MAX_UNIFORM_NUM];
       MCUInt uniformCount;
       
       MCDrawMode drawMode;
-      MCTexture* textureRef;
 );
 
+method(MCGLContext, void, bye, voida);
 //shader
 //please cache the location index when you first call the setters
 //then directly pass the location index and pass name null

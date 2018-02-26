@@ -9,7 +9,6 @@
 #ifndef MCMesh_h
 #define MCMesh_h
 
-#include <stdio.h>
 #include "monkc.h"
 #include "MCGLContext.h"
 #include "MCLinkedList.h"
@@ -52,6 +51,9 @@ class(MCMesh, MCItem,
 
       MCVertexAttribute vertexAttribArray[MCVertexAttribIndexMax];
       MCDrawMode mode;
+
+      MCTexture* diffuseTextureRef;
+      MCTexture* specularTextureRef;
 );
 
 method(MCMesh, void, bye, voida);

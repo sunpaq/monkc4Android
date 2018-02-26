@@ -18,7 +18,6 @@ oninit(MCGLContext)
         var(pid) = glCreateProgram();
         var(uniformCount) = 0;
         var(drawMode) = MCDrawNone;
-        var(textureRef) = null;
         return obj;
     }else{
         return null;
@@ -34,6 +33,11 @@ function(int, fillUniformLocation, MCGLUniform* uniform)
     return uniform->location;
 }
 
+method(MCGLContext, void, bye, voida)
+{
+    glDeleteProgram(var(pid));
+}
+
 method(MCGLContext, MCGLContext*, initWithShaderCode, const char* vcode, const char* fcode,
        const char* attribs[], size_t acount, MCGLUniformType types[], const char* uniforms[], size_t ucount)
 {
@@ -44,7 +48,7 @@ method(MCGLContext, MCGLContext*, initWithShaderCode, const char* vcode, const c
         glBindAttribLocation(obj->pid, i, attribs[i]);
     }
     
-    MCGLEngine_prepareShader(obj->pid, vcode, fcode);
+    MCGLEngine_prepareShader(obj->pid, vcode, fcode, "#version 300 es\n");
 
     //uniforms
     for (int i=0; i<ucount; i++) {
@@ -61,17 +65,17 @@ method(MCGLContext, MCGLContext*, initWithShaderCode, const char* vcode, const c
 method(MCGLContext, MCGLContext*, initWithShaderName, const char* vname, const char* fname,
        const char* attribs[], size_t acount, MCGLUniformType types[], const char* uniforms[], size_t ucount)
 {
-    char vpath[LINE_MAX] = {};
-    if(MCFileGetPath(vname, "vsh", vpath))
+    char vpath[LINE_MAX] = {0};
+    if(MCFileGetPath(vname, vpath))
         return null;
     const char* vcode = MCFileCopyContentWithPath(vpath);
     
-    char fpath[LINE_MAX] = {};
-    if(MCFileGetPath(vname, "fsh", fpath))
+    char fpath[LINE_MAX] = {0};
+    if(MCFileGetPath(fname, fpath))
         return null;
     const char* fcode = MCFileCopyContentWithPath(fpath);
     
-    MCGLContext_initWithShaderCode(0, obj, vcode, fcode, attribs, acount, types, uniforms, ucount);
+    MCGLContext_initWithShaderCode(obj, vcode, fcode, attribs, acount, types, uniforms, ucount);
     
     free((void*)vcode);
     free((void*)fcode);
@@ -87,7 +91,7 @@ method(MCGLContext, int, getUniformLocation, const char* name)
 {
     for (MCUInt i=0; i<obj->uniformCount; i++) {
         if (strcmp(name, obj->uniforms[i].name)==0) {
-            return fillUniformLocation(0, obj, &obj->uniforms[i]);
+            return fillUniformLocation(obj, &obj->uniforms[i]);
         }
     }
     return MC3DErrUniformNotFound;
@@ -166,7 +170,7 @@ method(MCGLContext, void,  setUniforms, voida)
     for (int i=0; i<var(uniformCount); i++) {
         if (var(uniformsDirty)[i] == true) {
             MCGLUniform* f = &var(uniforms)[i];
-            setUniform(0, obj, null, f->location, f);
+            setUniform(obj, null, f->location, f);
             var(uniformsDirty)[i] = false;
         }
     }
@@ -237,6 +241,7 @@ onload(MCGLContext)
     if (load(MCObject)) {
         mixing(int, setUniform, const char* name, int loc, MCGLUniform* uniform);
 
+        binding(MCGLContext, void, bye, voida);
         binding(MCGLContext, void, activateShaderProgram, voida);
         
         binding(MCGLContext, MCGLContext*, initWithShaderCode, const char* vcode, const char* fcode,

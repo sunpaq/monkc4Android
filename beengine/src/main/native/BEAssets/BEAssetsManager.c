@@ -9,130 +9,10 @@
 #ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
 #include <pthread.h>
+static CFStringRef BundlePath = NULL;
 #endif
 #include "BEAssetsManager.h"
-#include "SOIL.h"
-
-oninit(BE2DTextureData)
-{
-    if (init(MCObject)) {
-        //const types
-        obj->AUTO = 0;
-        obj->L    = 1;
-        obj->LA   = 2;
-        obj->RGB  = 3;
-        obj->RGBA = 4;
-        
-        //input
-        //obj->type = obj->RGB;
-        obj->path = "";
-        
-        //output
-        obj->raw = null;
-        return obj;
-    }else{
-        return null;
-    }
-}
-
-utility(BE2DTextureData, BE2DTextureData*, newWithPathType, const char* path, unsigned type)
-{
-    BE2DTextureData* data = new(BE2DTextureData);
-    size_t psize = strlen(path) * sizeof(char);
-    data->path = strcpy(malloc(psize), path);
-
-//    if (type >= data->AUTO && type<= data->RGBA ) {
-//        data->type = type;
-//    }else{
-//        data->type = data->RGB;
-//    }
-    data->raw = SOIL_load_image(data->path, &data->width, &data->height, &data->channels, SOIL_LOAD_AUTO);
-    return data;
-}
-
-utility(BE2DTextureData, BE2DTextureData*, newWithPath, const char* path)
-{
-    return BE2DTextureData_newWithPathType(path, 3);//default RGB
-}
-
-method(BE2DTextureData, void, bye, voida)
-{
-    if (obj->raw != null) {
-        SOIL_free_image_data(obj->raw);
-    }
-    superbye(MCObject);
-}
-
-onload(BE2DTextureData)
-{
-    if (load(MCObject)) {
-        binding(BE2DTextureData, void, bye, voida);
-        return cla;
-    }else{
-        return null;
-    }
-}
-
-//------------------------------
-oninit(BECubeTextureData)
-{
-    if (init(MCObject)) {
-        return obj;
-    }else{
-        return null;
-    }
-}
-
-utility(BECubeTextureData, BECubeTextureData*, newWithFacePaths, const char* facepaths[6])
-{
-    BECubeTextureData* data = new(BECubeTextureData);
-    for (int i=0; i<6; i++) {
-        BE2DTextureData* aface = BE2DTextureData_newWithPath(facepaths[i]);
-        if (aface != null) {
-            data->faces[i] = aface;
-        }else{
-            error_log("BECubeTextureData image %s data is null!\n", facepaths[i]);
-            return null;
-        }
-    }
-    return data;
-}
-
-utility(BECubeTextureData, BECubeTextureData*, newWithFaces, const char* faces[6], const char* extension)
-{
-    BECubeTextureData* data = new(BECubeTextureData);
-    char pathbuff[PATH_MAX] = {};
-    for (int i=0; i<6; i++) {
-        if(MCFileGetPath(faces[i], extension, pathbuff)){
-            return null;
-        }
-        pathbuff[PATH_MAX-1] = NUL;
-        data->faces[i] = BE2DTextureData_newWithPath(pathbuff);
-    }
-    return data;
-}
-
-method(BECubeTextureData, void, bye, voida)
-{
-    for (int i=0; i<6; i++) {
-        BE2DTextureData* face = obj->faces[i];
-        if (face != null) {
-            release(face);
-        }
-    }
-    superbye(MCObject);
-}
-
-onload(BECubeTextureData)
-{
-    if (load(MCObject)) {
-        binding(BECubeTextureData, void, bye, voida);
-        return cla;
-    }else{
-        return null;
-    }
-}
-
+#include "MCString.h"
 #ifdef __ANDROID__
 static AAssetManager* assetManager_ = null;
 static ANativeWindow* window_ = null;
@@ -149,40 +29,55 @@ AAssetManager* MCFileGetAssetManager()
 }
 #endif
 
-int MCFileGetPath(const char* filename, const char* extention, char* buffer)
+int MCFileGetPath(const char* filename, char* buffer)
 {
-    char buff[PATH_MAX] = {};
-    filename = MCString_filenameTrimExtension(filename, buff);
+    return MCFileGetPathFromBundle(NULL, filename, buffer);
+}
+
+int MCFileGetPathFromBundle(const char* bundlename, const char* filename, char* buffer)
+{
+    if (isFilename(filename) == false) {
+        printf("MCFileGetPath - filename malformed: %s\n", filename);
+        return -1;
+    }
+    
+    char basename[256] = {0};
+    char extension[64] = {0};
+    
+    if (MCString_extensionFromFilename(filename, basename, extension) > 0) {
+        printf("MCFileGetPath - filename/basename/extension -> %s/%s/%s\n", filename, basename, extension);
+    } else {
+        printf("MCFileGetPath - filename/basename/no extension -> %s/%s\n", filename, basename);
+    }
     
 #ifdef __ANDROID__
     if (assetManager_ != null) {
-		const char* subpath;
-		if (strcmp(extention, "fsh") == 0) {
-			subpath = "shaders";
-		} else if (strcmp(extention, "vsh") == 0) {
-			subpath = "shaders";
-		} else if (strcmp(extention, "obj") == 0 || strcmp(extention, "mtl") == 0) {
-			subpath = "raw";
-		} else if (strcmp(extention, "png") == 0) {
-			subpath = "textures";
-		} else if (strcmp(extention, "jpg") == 0) {
-			subpath = "textures";
-        } else if (strcmp(extention, "tga") == 0) {
+        const char* subpath;
+        if (strcmp(extension, "fsh") == 0) {
+            subpath = "shaders";
+        } else if (strcmp(extension, "vsh") == 0) {
+            subpath = "shaders";
+        } else if (strcmp(extension, "obj") == 0 || strcmp(extension, "mtl") == 0) {
+            subpath = "raw";
+        } else if (strcmp(extension, "png") == 0) {
             subpath = "textures";
-		} else {
-			subpath = "raw";
+        } else if (strcmp(extension, "jpg") == 0) {
+            subpath = "textures";
+        } else if (strcmp(extension, "tga") == 0) {
+            subpath = "textures";
+        } else if (strcmp(extension, "dds") == 0) {
+            subpath = "textures";
+        } else {
+            subpath = "raw";
             error_log("can not detect use raw folder\n");
-		}
-
-        char fullname[PATH_MAX] = {};
-		sprintf(fullname, "%s.%s", filename, extention);
-
-		AAssetDir* rootdir = AAssetManager_openDir(assetManager_, subpath);
+        }
+        
+        AAssetDir* rootdir = AAssetManager_openDir(assetManager_, subpath);
         if (rootdir) {
             const char* name;
-            char fullpath[PATH_MAX] = {};
+            char fullpath[PATH_MAX] = {0};
             while ((name=AAssetDir_getNextFileName(rootdir)) != NULL) {
-                if (strcmp(fullname, name) == 0) {
+                if (strcmp(filename, name) == 0) {
                     sprintf(fullpath, "%s/%s", subpath, name);
                     strcpy(buffer, fullpath);
                 }
@@ -191,32 +86,44 @@ int MCFileGetPath(const char* filename, const char* extention, char* buffer)
             error_log("can not find rootdir\n");
             return -1;
         }
-	}
+    }
     return 0;
 #else
-    static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-    pthread_mutex_lock(&lock);
-    
-    CFStringRef fname = CFStringCreateWithCString(NULL, filename, kCFStringEncodingUTF8);
-    CFStringRef  fext = CFStringCreateWithCString(NULL, extention, kCFStringEncodingUTF8);
-    CFURLRef      url = CFBundleCopyResourceURL(CFBundleGetMainBundle(), fname, fext, NULL);
-    if (url) {
-        CFStringRef  path = CFURLCopyPath(url);
-        CFStringGetCString(path, buffer, PATH_MAX, kCFStringEncodingUTF8);
-        CFRelease(path);
+
+    if (BundlePath == NULL) {
+        //static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+        //pthread_mutex_lock(&lock);
+        CFBundleRef bundle = NULL;
+        if (bundlename) {
+            CFStringRef bid = CFStringCreateWithCString(kCFAllocatorDefault, bundlename, kCFStringEncodingUTF8);
+            bundle = CFBundleGetBundleWithIdentifier(bid);
+            CFRelease(bid);
+        } else {
+            bundle = CFBundleGetMainBundle();
+        }
+        if (!bundle) {
+            error_log("BEAssetManager can not find bundle (%s)\n", bundlename);
+            //pthread_mutex_unlock(&lock);
+            return -1;
+        }
+        CFURLRef url = CFBundleCopyBundleURL(bundle);
+        if (!url) {
+            error_log("BEAssetManager can not find path of (%s).(%s)\n", basename, extension);
+            //pthread_mutex_unlock(&lock);
+            return -1;
+        }
+        BundlePath = CFURLCopyPath(url);
         CFRelease(url);
-        CFRelease(fname);
-        CFRelease(fext);
-    } else {
-        error_log("BEAssetManager can not find path of (%s).(%s)\n", filename, extention);
-        CFRelease(fname);
-        CFRelease(fext);
-        pthread_mutex_unlock(&lock);
-        return -1;
+        //pthread_mutex_unlock(&lock);
     }
     
-    pthread_mutex_unlock(&lock);
+    char rootpath[PATH_MAX] = {0};
+    CFStringGetCString(BundlePath, rootpath, PATH_MAX, kCFStringEncodingUTF8);
+    
+    strcat(rootpath, filename);
+    strncpy(buffer, rootpath, PATH_MAX);
     return 0;
+
 #endif
 }
 
@@ -245,23 +152,33 @@ const char* MCFileCopyContentWithPath(const char* filepath)
     error_log("MCFileCopyContent(%s) Android assetManager_ is null\n", filepath);
     return null;
 #else
-    char decodepath[PATH_MAX] = {};
+    char decodepath[PATH_MAX] = {0};
     FILE* f = fopen(MCString_percentDecode(filepath, decodepath), "r");
     if (f) {
         fseek(f, 0, SEEK_END);
         long size = ftell(f);
         fseek(f, 0, SEEK_SET);
-        char* const buffer = (char*)malloc(size * sizeof(char));
+        char* buffer = (char*)malloc(size);
+        if (!buffer) {
+            error_log("MCFileCopyContent(%s) can not alloc buffer\n", filepath);
+            return null;
+        }
+        memset(buffer, 0, size);
+        //copy
         char* iter = buffer;
-        
         if (f != NULL) {
             char c;
             while ((c = fgetc(f)) != EOF) {
-                *iter++ = c;
+                (*iter) = c;
+                iter++;
             }
-            *iter = NUL;
+            buffer[size] = NUL;
+            //*iter = NUL;
         }
-        
+        fclose(f);
+        if (buffer[0] != '#') {
+            
+        }
         return buffer;
     }else{
         error_log("MCFileCopyContent(%s) fopen return null\n", filepath);
