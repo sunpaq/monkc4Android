@@ -69,7 +69,7 @@ int MCFileGetPathFromBundle(const char* bundlename, const char* filename, char* 
             subpath = "textures";
         } else {
             subpath = "raw";
-            error_log("can not detect use raw folder\n");
+            error_log("can not detect(%s) use raw folder\n", extension);
         }
         
         AAssetDir* rootdir = AAssetManager_openDir(assetManager_, subpath);

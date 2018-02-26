@@ -81,6 +81,10 @@
  and keep the code runable on old device
  */
 
+#ifndef asm
+#define asm __asm__
+#endif
+
 #if defined(__x86_64__)
 .text
 #if defined(__MACH__)
@@ -92,11 +96,13 @@ __push_jump:
 .p2align 4, 0x00
 _push_jump:
 #endif
-	cmpq $0, %rdi
-	je 0f
-	jmp *%rdi
+movq (%rdi), %r11 //%rbp %rbx %r12-r15 belong to caller
+movq $0, (%rdi)
+cmpq $0, %r11
+je 0f
+jmp *%r11
 0:
-	ret
+ret
 #endif
 
 #if defined(__i386__)
@@ -110,11 +116,13 @@ __push_jump:
 .p2align 2, 0x00
 _push_jump:
 #endif
-    cmpl $0, 0(%esp)
-    je 0f
-    jmp *0(%esp)
+mov (%esp), %edx
+//movw $0, (%esp)
+cmpl $0, %edx
+je 0f
+jmp *%edx
 0:
-    ret
+ret
 #endif
 
 #if defined(__arm64__) || defined(__aarch64__)
@@ -128,22 +136,26 @@ __push_jump:
 .p2align 4, 0x00
 _push_jump:
 #endif
-	cmp x0, #0
-	beq 0f
+ldr x15, [x0] //x9-x15 temporary regs
+mov x14, #0
+str x14, [x0]
+cmp x15, #0
+beq 0f
 #if defined(__MACH__)
-    ldp x2, x3, [sp]
-    ldp x4, x5, [sp, #16]
-    ldp x6, x7, [sp, #32]
-    br x0
+ldp x1, x2, [sp]
+ldp x3, x4, [sp, #16]
+ldp x5, x6, [sp, #32]
+ldr x7, [sp, #48]
+br x15
 #else
-    br x0
+br x15
 #endif
 0:
-    ret
+ret
 #endif
 
-#if defined(__armv7s__) || defined(__armv7__) || defined(__armv6__) \
-|| (defined(__arm__) && !defined(__aarch64__))
+#if defined(__armv7s__) || defined(__armv7__) || defined(__armv6__) || \
+(defined(__arm__) && !defined(__aarch64__))
 .text
 #if defined(__MACH__)
 .globl __push_jump
@@ -154,11 +166,14 @@ __push_jump:
 .p2align 2, 0x00
 _push_jump:
 #endif
-    cmp r0, #0
-    beq 0f
-    bx r0
+ldr r10, [r0] //x9-x15 temporary regs
+mov r9, #0
+str r9, [r0]
+cmp r10, #0
+beq 0f
+bx r10
 0:
-    bx lr
+bx lr
 #endif
 
 #if defined(__powerpc__) || defined(__ppc__) || defined(__PPC__)
@@ -168,12 +183,12 @@ defined(__64BIT__) || defined(_LP64) || defined(__LP64__)
 .globl _push_jump
 .align 8
 _push_jump:
-    cmpi 0,0,3,0
-    beq 0f
-    ldu 12, 0(4)
-    mtctr 12
-    bctr
+cmpi 0,0,3,0
+beq 0f
+ldu 12, 0(4)
+mtctr 12
+bctr
 0:
-    blr
+blr
 #endif
 #endif
