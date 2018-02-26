@@ -45,9 +45,9 @@ int MCFileGetPathFromBundle(const char* bundlename, const char* filename, char* 
     char extension[64] = {0};
     
     if (MCString_extensionFromFilename(filename, basename, extension) > 0) {
-        printf("MCFileGetPath - filename/basename/extension -> %s/%s/%s\n", filename, basename, extension);
+        debug_log("MCFileGetPath - filename/basename/extension -> %s/%s/%s\n", filename, basename, extension);
     } else {
-        printf("MCFileGetPath - filename/basename/no extension -> %s/%s\n", filename, basename);
+        debug_log("MCFileGetPath - filename/basename/no extension -> %s/%s\n", filename, basename);
     }
     
 #ifdef __ANDROID__
@@ -72,12 +72,14 @@ int MCFileGetPathFromBundle(const char* bundlename, const char* filename, char* 
             error_log("can not detect(%s) use raw folder\n", extension);
         }
         
+        char fullname[PATH_MAX] = {};
+		sprintf(fullname, "%s.%s", filename, extension);
         AAssetDir* rootdir = AAssetManager_openDir(assetManager_, subpath);
         if (rootdir) {
             const char* name;
             char fullpath[PATH_MAX] = {0};
             while ((name=AAssetDir_getNextFileName(rootdir)) != NULL) {
-                if (strcmp(filename, name) == 0) {
+                if (strcmp(fullname, name) == 0) {
                     sprintf(fullpath, "%s/%s", subpath, name);
                     strcpy(buffer, fullpath);
                 }
