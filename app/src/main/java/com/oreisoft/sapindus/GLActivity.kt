@@ -1,6 +1,7 @@
 package com.oreisoft.sapindus
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import com.oreisoft.beengine.BERenderer
 import com.oreisoft.beengine.BEResource
@@ -35,5 +36,16 @@ class GLActivity : Activity(), BEView.BEViewDelegate {
 
     override fun afterDrawFrame() {
 
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        startActivity(intent)
+        finish()
+        System.gc()
+        System.exit(0)
     }
 }
