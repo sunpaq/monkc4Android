@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.oreisoft.beengine.BEResource
-import kotlinx.coroutines.experimental.async
 
 class MainActivity : Activity() {
 
@@ -33,7 +32,8 @@ class MainActivity : Activity() {
     }
 
     fun onButtonClicked(view: View) {
-        startActivity(Intent(this, GLActivity::class.java))
+        val intent = Intent(this, GLActivity::class.java)
+        startActivity(intent)
     }
 
 }
