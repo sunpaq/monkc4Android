@@ -73,7 +73,7 @@ int MCFileGetPathFromBundle(const char* bundlename, const char* filename, char* 
         }
         
         char fullname[PATH_MAX] = {};
-		sprintf(fullname, "%s.%s", filename, extension);
+		sprintf(fullname, "%s.%s", basename, extension);
         AAssetDir* rootdir = AAssetManager_openDir(assetManager_, subpath);
         if (rootdir) {
             const char* name;
@@ -123,7 +123,7 @@ int MCFileGetPathFromBundle(const char* bundlename, const char* filename, char* 
     CFStringGetCString(BundlePath, rootpath, PATH_MAX, kCFStringEncodingUTF8);
     
     strcat(rootpath, filename);
-    strncpy(buffer, rootpath, PATH_MAX);
+    MCStringFillLimited(buffer, rootpath, strlen(rootpath));
     return 0;
 
 #endif

@@ -51,22 +51,8 @@ void openFile(const char* filename)
     if (model) {
         debug_log("Create MC3DModel success:%s\n", model->name);
 
-        MC3DFrame frame = model->lastSavedFrame;
-        double mheight = frame.ymax - frame.ymin;
-        double mwidth  = frame.xmax - frame.xmin;
-        double mdepth  = frame.zmax - frame.zmin;
-
-        double _max = (mheight > mwidth) ? mheight : mwidth;
-        double max = (mdepth > _max) ? mdepth : _max;
-
-        //wait skybox loading
-        //MCThread_joinThread(director->skyboxThread->tid);
-
-        //assemble
-        computed(director, cameraHandler)->lookat.y = mheight / 2.0f;
-        computed(director, cameraHandler)->R_value = max * 2.0f;
-
-        ff(director, addModel, model);
+        MCDirector_addModel(director, model, MCFloatF(10.0));
+        MCDirector_cameraFocusOn(director, MCVector4Make(0, -10 * 0.5, 0, 10 * 2.0));
 
     } else {
         error_log("Can not create MC3DModel:%s\n", filename);
