@@ -25,7 +25,11 @@ open class BEEngineView(context: Context) : GLSurfaceView(context) {
     private var mScaleFactor = 1f
 
     init {
-        BERenderer.setAssetManager(context.applicationContext.assets)
+        if (context.applicationContext.assets != null) {
+            BERenderer.setAssetManager(context.applicationContext.assets)
+        } else {
+            error("BEEngineView - context.applicationContext.assets is null can not setAssetManager")
+        }
 
         // Pick an EGLConfig with RGBA8 color, 24-bit depth, no stencil,
         // supporting OpenGL ES 3.0 or later backwards-compatible versions.

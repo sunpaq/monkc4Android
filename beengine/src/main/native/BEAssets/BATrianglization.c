@@ -35,9 +35,12 @@ size_t getTrianglesBuffSize(BAFace* faces, size_t facecounts)
 BATriangle* createTrianglesBuffer(BAFace* faces, size_t facecounts)
 {
     size_t size = getTrianglesBuffSize(faces, facecounts);
-    BATriangle* triangles = (BATriangle*)malloc(sizeof(BATriangle) * size);
-    memset(triangles, 0, sizeof(BATriangle) * size);
-    return triangles;
+    if (size > 0) {
+        BATriangle* triangles = (BATriangle*)malloc(sizeof(BATriangle) * size);
+        memset(triangles, 0, sizeof(BATriangle) * size);
+        return triangles;
+    }
+    return null;
 }
 
 void releaseTrianglesBuffer(BATriangle* buff)
@@ -91,7 +94,7 @@ size_t trianglization(BATriangle* triangles, BAFace* faces, size_t facecounts, M
                 mcvertexes[i] = vertexbuff[data[i*3]];
             }
             
-            MCPolygon Poly = {};
+            MCPolygon Poly = {0};
             MCPolygonInit(&Poly, mcvertexes, count);
             
             if (Poly.isConvex) {

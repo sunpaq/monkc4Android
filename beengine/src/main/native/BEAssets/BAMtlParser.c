@@ -14,17 +14,14 @@
  Ka|Kd|Ks|Tf [xyz|spectral] rx gy bz | [file.rfl factor]
  */
 //return face count
-MCInline size_t processMtlLine(BAMtlLibrary* lib, const char* linebuff)
+MCInline void processMtlLine(BAMtlLibrary* lib, const char* linebuff)
 {
     //debug_log("processMtlLine:%s\n", linebuff);
-    
-    //pointers
-    BAMaterial* material;
     
     //MCToken token;
     MCToken token;
     
-    char word[256] = {};
+    char word[256] = {0};
     const char* remain = linebuff;
     while (!isNewLine(remain) && *remain != NUL) {
         token = tokenize(nextWord(&remain, word));
@@ -34,36 +31,44 @@ MCInline size_t processMtlLine(BAMtlLibrary* lib, const char* linebuff)
                 if (MCStringEqualN(word, "newmtl", 6)) {
                     token = tokenize(nextWord(&remain, word));
                     if (token.type == MCTokenIdentifier || token.type == MCTokenFilename) {
-                        lib->materialCursor++;
-                        material = currentMaterial(lib);
-                        MCStringFill(material->name, token.value.Word);
+                        if (!BAFindMaterial(lib, token.value.Word)) {
+                            BAAddMaterial(lib, token.value.Word);
+                        }
                         continue;
                     }
                 }
                 //texture
                 else if (MCStringEqualN(word, "map_Ka", 6)) {
-                    return 0;//next line
+                    return;//next line
                 }
                 else if (MCStringEqualN(word, "map_Kd", 6)) {
-                    char name[256] = {};
-                    material = currentMaterial(lib);
+                    char name[256] = {0};
+                    BAMaterial* material = lib->materialsList;
                     if (material && MCString_filenameFromPath(remain, &name)) {
                         MCStringFill(material->diffuseMapName, name);
+                        
                     } else {
                         error_log("BAMtlParser - can not get filename form path: %s\n", remain);
                     }
-                    return 0;//next line
+                    return;//next line
                 }
                 else if (MCStringEqualN(word, "map_Ks", 6)) {
-                    return 0;//next line
+                    char name[256] = {0};
+                    BAMaterial* material = lib->materialsList;
+                    if (material && MCString_filenameFromPath(remain, &name)) {
+                        MCStringFill(material->specularMapName, name);
+                    } else {
+                        error_log("BAMtlParser - can not get filename form path: %s\n", remain);
+                    }
+                    return;//next line
                 }
                 else if (MCStringEqualN(word, "map_Ke", 6)) {
-                    return 0;//next line
+                    return;//next line
                 }
                 //LSLightColor
                 else if (MCStringEqualN(word, "illum", 5)) {
                     token = tokenize(nextWord(&remain, word));
-                    material = currentMaterial(lib);
+                    BAMaterial* material = lib->materialsList;
                     if (material) {
                         if (token.type == MCTokenIdentifier) {
                             if (MCStringEqualN(token.value.Word, "illum_", 6)) {
@@ -86,23 +91,23 @@ MCInline size_t processMtlLine(BAMtlLibrary* lib, const char* linebuff)
                 else if (MCStringEqualN(word, "K", 1) || MCStringEqualN(word, "Tf", 2)) {
                     BALightColor* light = null;
                     if (MCStringEqualN(word, "Tf", 2)) {
-                        light = &(currentMaterial(lib)->lightColors[TFilter]);
+                        light = &(lib->materialsList->lightColors[TFilter]);
                     }
                     else if (MCStringEqualN(word, "Ka", 2)) {
-                        light = &(currentMaterial(lib)->lightColors[Ambient]);
+                        light = &(lib->materialsList->lightColors[Ambient]);
                     }
                     else if (MCStringEqualN(word, "Kd", 2)) {
-                        light = &(currentMaterial(lib)->lightColors[Diffuse]);
+                        light = &(lib->materialsList->lightColors[Diffuse]);
                     }
                     else if (MCStringEqualN(word, "Ks", 2)) {
-                        light = &(currentMaterial(lib)->lightColors[Specular]);
+                        light = &(lib->materialsList->lightColors[Specular]);
                     }
                     else if (MCStringEqualN(word, "Ke", 2)) {
-                        light = &(currentMaterial(lib)->lightColors[Emissive]);
+                        light = &(lib->materialsList->lightColors[Emissive]);
                     }
                     if (!light) {
                         error_log("BAMtlParser - [%s] not light Ka/Kd/Ks\n", word);
-                        return 0;
+                        return;
                     }
                     light->Ctype = RGB;
                     
@@ -126,13 +131,13 @@ MCInline size_t processMtlLine(BAMtlLibrary* lib, const char* linebuff)
                                 }
                             }
                             //end line
-                            return 0;
+                            return;
                         }
                     }
                     //float value next
                     else if (token.type == MCTokenFloat || token.type == MCTokenInteger) {
                         if (light->Ctype != SpectralFile) {
-                            double buff[3] = {};
+                            double buff[3] = {0};
                             size_t n = nextNumbersAsFloat(&remain, buff);
                             if (n >= 3) {
                                 light->data.rgbxyz[0] = buff[0];
@@ -146,13 +151,12 @@ MCInline size_t processMtlLine(BAMtlLibrary* lib, const char* linebuff)
                 }
                 //LSScalar
                 else if (MCStringEqualN(word, "Ns", 2)) {
-                    material = currentMaterial(lib);
                     token = tokenize(nextWord(&remain, word));
                     if (token.type == MCTokenInteger) {
-                        material->specularExponent = (double)token.value.Integer;
+                        lib->materialsList->specularExponent = (double)token.value.Integer;
                     }
                     if (token.type == MCTokenFloat) {
-                        material->specularExponent = (double)token.value.Double;
+                        lib->materialsList->specularExponent = (double)token.value.Double;
                     }
                     continue;
                 }
@@ -167,27 +171,43 @@ MCInline size_t processMtlLine(BAMtlLibrary* lib, const char* linebuff)
                 }
                 else if (MCStringEqualN(word, "d", 1)) {
                     token = tokenize(nextWord(&remain, word));
-                    material = currentMaterial(lib);
-                    if (material) {
+                    if (lib->materialsList) {
                         if (token.type == MCTokenFloat) {
-                            material->dissolveFactor = (double)token.value.Double;
+                            lib->materialsList->dissolveFactor = (double)token.value.Double;
                         }
                         if (token.type == MCTokenInteger) {
-                            material->dissolveFactor = (double)token.value.Integer;
+                            lib->materialsList->dissolveFactor = (double)token.value.Integer;
                         }
                     }
                     continue;
                 }
+                //BohdiEngine extensions
                 else if (MCStringEqualN(word, "ext_hidden", 10)) {
                     token = tokenize(nextWord(&remain, word));
-                    material = currentMaterial(lib);
-                    if (material) {
+                    if (lib->materialsList) {
                         if (token.type == MCTokenIdentifier && MCStringEqualN(token.value.Word, "off", 3)) {
-                            material->hidden = 0;
+                            lib->materialsList->hidden = 0;
                         }else{
-                            material->hidden = 1;
+                            lib->materialsList->hidden = 1;
                         }
                     }
+                }
+                else if (MCStringEqualN(word, "ext_tex_file", 12)) {
+                    token = tokenize(nextWord(&remain, word));
+                    if(!BAFindTextureByFilename(lib, token.value.Word)) {
+                        BAAddTexture(lib, token.value.Word, null, null);
+                    }
+                }
+                else if (MCStringEqualN(word, "ext_tex_group", 13)) {
+                    token = tokenize(nextWord(&remain, word));
+                    BATexture* tex = lib->texturesList;
+                    MCStringFill(tex->attachedGroup, token.value.Word);
+                }
+                else if (MCStringEqualN(word, "ext_tex_object", 14)) {
+                    token = tokenize(nextWord(&remain, word));
+                    BATexture* tex = lib->texturesList;
+                    MCStringFill(tex->attachedObject, token.value.Word);
+                    
                 }
                 else {
                     
@@ -201,13 +221,25 @@ MCInline size_t processMtlLine(BAMtlLibrary* lib, const char* linebuff)
         }
     }
 
-    return 0;
+    return;
+}
+
+static BAMtlLibrary* BAMtlLibraryAlloc() {
+    BAMtlLibrary* lib = (BAMtlLibrary*)malloc(sizeof(BAMtlLibrary));
+    if (lib) {
+        lib->next = null;
+        lib->materialsList = null;
+        lib->texturesList = null;
+        lib->name[0] = NUL;
+        return lib;
+    }
+    return null;
 }
 
 BAMtlLibrary* BAMtlLibraryNew(const char* filename)
 {
-    char path[LINE_MAX] = {};
-    if(MCFileGetPath(filename, "mtl", path)) {
+    char path[PATH_MAX] = {0};
+    if(MCFileGetPath(filename, path)) {
         return null;
     }
     
@@ -233,15 +265,41 @@ BAMtlLibrary* BAMtlLibraryNew(const char* filename)
             }
             processMtlLine(lib, line);
         }
-        BAMtlLibraryResetCursor(lib);
-        
         free((void*)assetbuff);
-        
         MCStringFill(lib->name, filename);
         return lib;
     }else{
         error_log("MC3DObjParser - AAssetManager_open %s failed\n", filename);
         return null;
     }
+}
+
+static void recursiveFreeBAMaterial(BAMaterial* ptr)
+{
+    if (!ptr)
+        return;
+    if (ptr->next)
+        recursiveFreeBAMaterial(ptr->next);
+    free(ptr);
+}
+
+static void recursiveFreeBATexture(BATexture* ptr)
+{
+    if (!ptr)
+        return;
+    if (ptr->next)
+        recursiveFreeBATexture(ptr->next);
+    free(ptr);
+}
+
+void BAMtlLibraryRelease(BAMtlLibrary* lib)
+{
+    if (lib->materialsList) {
+        recursiveFreeBAMaterial(lib->materialsList);
+    }
+    if (lib->texturesList) {
+        recursiveFreeBATexture(lib->texturesList);
+    }
+    free(lib);
 }
 
