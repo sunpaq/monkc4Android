@@ -32,11 +32,7 @@ class BEView(context: Context) : GLSurfaceView(context), BERenderer.BERendererDe
     var renderer: BERenderer? = null
 
     init {
-        if (context.applicationContext.assets != null) {
-            BENativeRenderer.setAssetManager(context.applicationContext.assets)
-        } else {
-            error("BEView - context.applicationContext.assets is null can not setAssetManager")
-        }
+
 
         // Pick an EGLConfig with RGBA8 color, 24-bit depth, no stencil,
         // supporting OpenGL ES 3.0 or later backwards-compatible versions.
@@ -54,16 +50,6 @@ class BEView(context: Context) : GLSurfaceView(context), BERenderer.BERendererDe
 
     constructor(context: Context, attrs: AttributeSet) : this(context) {}
 
-    override fun surfaceCreated(holder: SurfaceHolder?) {
-        super.surfaceCreated(holder)
-    }
-
-    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, w: Int, h: Int) {
-        super.surfaceChanged(holder, format, w, h)
-        renderer?.resizeAllScene(Size(w,h))
-        Log.v(TAG, "resize to " + w + "x" + h)
-    }
-
     override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
         super.onWindowFocusChanged(hasWindowFocus)
         delegate?.onBERendererPrepared(renderer!!)
@@ -72,7 +58,6 @@ class BEView(context: Context) : GLSurfaceView(context), BERenderer.BERendererDe
     override fun onTouchEvent(e: MotionEvent): Boolean {
         mScaleDetector.onTouchEvent(e)
         mScrollDetector.onTouchEvent(e)
-        BENativeRenderer.onGestureScale(mScaleFactor)
         invalidate()
         return true
     }
@@ -88,13 +73,15 @@ class BEView(context: Context) : GLSurfaceView(context), BERenderer.BERendererDe
     private inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
         override fun onScale(detector: ScaleGestureDetector): Boolean {
             mScaleFactor = detector.scaleFactor
+            BENativeRenderer.onGestureScale(mScaleFactor)
             return true
         }
     }
 
     private inner class ScrollListener : GestureDetector.SimpleOnGestureListener() {
         override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
-            BENativeRenderer.onGestureScroll(distanceX.toDouble(), distanceY.toDouble())
+            val factor = -0.1
+            BENativeRenderer.onGestureScroll(distanceX.toDouble() * factor,distanceY.toDouble() * factor)
             return true
         }
     }

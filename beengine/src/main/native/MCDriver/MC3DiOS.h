@@ -53,8 +53,7 @@ typedef enum {
     MC3DiOS_CameraRadiusPDelta,
     MC3DiOS_CameraAngels,
     MC3DiOS_CameraAngelsDelta,
-    MC3DiOS_GetCurrent,
-    MC3DiOS_LockRotation
+    MC3DiOS_GetCurrent
 } MC3DiOS_CameraCmdType;
 
 typedef struct {
