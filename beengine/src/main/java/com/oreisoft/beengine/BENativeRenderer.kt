@@ -17,4 +17,6 @@ object BENativeRenderer {
     external fun setAssetManager(man: Any)
     external fun onGestureScale(scale: Float)
     external fun onGestureScroll(x: Double, y: Double)
+    external fun cacheTextureNamed(name: String)
+    external fun setCameraAutoRotation(autorotate: Boolean)
 }

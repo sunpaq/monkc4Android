@@ -8,4 +8,32 @@
     tools:context="com.oreisoft.sapindus.MainActivity">
 
 
+    <Button
+        android:id="@+id/start_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="Start"
+        android:visibility="invisible"
+        android:onClick="onButtonClicked"/>
+
+    <TextView
+        android:id="@+id/beengine_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="55dp"
+        android:text="BohdiEngine"
+        android:textSize="36sp" />
+
+    <TextView
+        android:id="@+id/loading_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/start_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="43dp"
+        android:text="loading textures..." />
 </RelativeLayout>

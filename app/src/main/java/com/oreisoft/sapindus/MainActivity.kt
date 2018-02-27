@@ -1,36 +1,39 @@
 package com.oreisoft.sapindus
 
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import com.oreisoft.beengine.BEView
-import com.oreisoft.beengine.BERenderer
+import android.view.View
+import com.oreisoft.beengine.BEResource
+import kotlinx.coroutines.experimental.async
 
-class MainActivity : Activity(), BEView.BEViewDelegate {
+class MainActivity : Activity() {
 
-    var beview: BEView? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-    override fun onCreate(icicle: Bundle?) {
-        super.onCreate(icicle)
-        beview = BEView(applicationContext)
-        beview?.let {
-            setContentView(it)
-            it.delegate = this
+        findViewById(R.id.loading_status).visibility = View.VISIBLE
+        findViewById(R.id.start_button).visibility = View.INVISIBLE
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            BEResource.Companion.shared(this)?.preloadTextures("jpg")
+
+            findViewById(R.id.loading_status).visibility = View.INVISIBLE
+            findViewById(R.id.start_button).visibility = View.VISIBLE
         }
     }
 
-    override fun onBERendererPrepared(renderer: BERenderer) {
-        beview?.let {
-            print("MainActivity - onBERendererPrepared")
-            //it.hideSystemUI()
-            it.renderer?.addModelNamed("2.obj")
-        }
+    fun onButtonClicked(view: View) {
+        startActivity(Intent(this, GLActivity::class.java))
     }
 
-    override fun beforeDrawFrame() {
-
-    }
-
-    override fun afterDrawFrame() {
-
-    }
 }

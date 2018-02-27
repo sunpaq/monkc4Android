@@ -36,7 +36,7 @@ class BERenderer(private val context: Context): GLSurfaceView.Renderer {
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
-        //implemented in BEView
+        resizeAllScene(Size(width, height))
     }
 
     override fun onDrawFrame(gl: GL10) {
@@ -52,6 +52,10 @@ class BERenderer(private val context: Context): GLSurfaceView.Renderer {
 
     fun initRenderer() {
         BENativeRenderer.initialGL()
+    }
+
+    fun cacheTextureNamed(name: String) {
+        BENativeRenderer.cacheTextureNamed(name)
     }
 
     //+(GLKView*) createDefaultGLView:(CGRect)frame;

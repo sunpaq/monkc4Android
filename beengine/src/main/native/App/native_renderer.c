@@ -6,6 +6,7 @@
 #include "MC3DiOS.h"
 #include "BEAssetsManager.h"
 #include "BECubeTextureData.h"
+#include "MCTextureCache.h"
 #include "MCDirector.h"
 #include "MCCube.h"
 
@@ -210,16 +211,14 @@ void onGesturePan(double x, double y)
 
     if (director != null && director->lastScene != null && camera != null) {
         double sign = camera->isReverseMovement == true? -1.0f : 1.0f;
-        if (camera->isLockRotation == true) {
-            double factor = 0.01;
-            MCCamera_fucus(camera, MCFloatF(x*sign*factor), MCFloatF(y*sign*factor));
-        }else{
-            MCCamera_move(camera, MCFloatF(x*sign), MCFloatF(y*sign));
-//            if (computed(director->lastScene, isDrawSky)) {
-//                MCCamera* cam2 = superof(director->lastScene->skyboxRef->camera);
-//                MCCamera_move(cam2, MCFloatF(x*sign / 5), MCFloatF(y*sign / 5));
-//            }
-        }
+        MCCamera_move(camera, MCFloatF(x*sign), MCFloatF(y*sign));
+
+//        if (camera->isLockRotation == true) {
+//            double factor = 0.01;
+//            MCCamera_fucus(camera, MCFloatF(x*sign*factor), MCFloatF(y*sign*factor));
+//        }else{
+//            MCCamera_move(camera, MCFloatF(x*sign), MCFloatF(y*sign));
+//        }
     }
 }
 
@@ -317,9 +316,6 @@ void cameraCommand(MC3DiOS_CameraCmd* cmd)
                     cmd->fai = camera->fai;
 
                     break;
-                case MC3DiOS_LockRotation:
-                    camera->isLockRotation = cmd->lockRotation;
-                    break;
                 default:
                     break;
             }
@@ -383,4 +379,23 @@ java(void, onGestureScroll, jdouble x, jdouble y)
     onGesturePan(x, y);
 }
 
+java(void, cacheTextureNamed, jstring name)
+{
+    const char* cname = CStringFromJavaString(name);
+    MCTextureCache* tcache = MCTextureCache_shared(0);
+    MCTexture* mtex = MCTextureCache_findTextureNamed(tcache, cname);
+    if (mtex == null) {
+        mtex = MCTexture_initWithFileName(new(MCTexture), cname);
+        MCTextureCache_cacheTextureNamed(tcache, mtex, cname);
+    }
+    CStringRelease(name, cname);
+}
 
+java(void, setCameraAutoRotation, jboolean autorotate)
+{
+    if (autorotate == true) {
+        director->lastScene->cameraAutoRotate = true;
+    } else {
+        director->lastScene->cameraAutoRotate = false;
+    }
+}
