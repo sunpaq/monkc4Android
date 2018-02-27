@@ -327,9 +327,9 @@ void cameraCommand(MC3DiOS_CameraCmd* cmd)
     }
 }
 
-#define java(type, name, ...) jni(Java_com_oreisoft_beengine_BERenderer, type, name, __VA_ARGS__)
+#define java(type, name, ...) jni(Java_com_oreisoft_beengine_BENativeRenderer, type, name, __VA_ARGS__)
 
-java(void, init, voida)
+java(void, initialGL, voida)
 {
     const char* gles_version = (const char*)glGetString(GL_VERSION);
     const char* glsl_version = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
