@@ -10,7 +10,7 @@ object BENativeRenderer {
         System.loadLibrary("native_renderer")
     }
 
-    external fun init()
+    external fun initialGL()
     external fun openFile(name: String)
     external fun resize(width: Int, height: Int)
     external fun render()
