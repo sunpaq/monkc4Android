@@ -2,7 +2,7 @@
 
 newmtl White_2
 Kd 0.000000 0.000000 1.000000
-map_Kd Mouth.jpg
+#map_Kd Mouth.jpg
 
 newmtl White_1
 Kd 0.000000 1.000000 0.000000
@@ -10,8 +10,8 @@ map_Kd SirenHead_Bm.jpg
 
 newmtl White_0
 Kd 1.000000 0.000000 0.000000
-map_Kd SirenBody_Bm.jpg
+#map_Kd SirenBody_Bm.jpg
 
 newmtl White
 Kd 1.000000 1.000000 1.000000
-map_Kd SirenHands_Dif.jpg
+#map_Kd SirenHands_Dif.jpg

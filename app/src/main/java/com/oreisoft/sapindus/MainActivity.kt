@@ -1,24 +1,36 @@
 package com.oreisoft.sapindus
 
+import android.app.Activity
 import android.os.Bundle
-import com.oreisoft.beengine.BEEngineView
-import com.oreisoft.beengine.BEGLActivity
+import com.oreisoft.beengine.BEView
+import com.oreisoft.beengine.BERenderer
 
-class MainActivity : BEGLActivity() {
+class MainActivity : Activity(), BEView.BEViewDelegate {
+
+    var beview: BEView? = null
 
     override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
-        beview = BEEngineView(applicationContext)
+        beview = BEView(applicationContext)
         beview?.let {
             setContentView(it)
+            it.delegate = this
         }
     }
 
-    override fun onBEEnginePrepared() {
+    override fun onBERendererPrepared(renderer: BERenderer) {
         beview?.let {
-            it.loadModel("Avent.obj")
+            print("MainActivity - onBERendererPrepared")
             //it.hideSystemUI()
+            it.renderer?.addModelNamed("2.obj")
         }
     }
 
+    override fun beforeDrawFrame() {
+
+    }
+
+    override fun afterDrawFrame() {
+
+    }
 }

@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.4.1)
 
 enable_language(ASM C)
-set(MCTrampolineSrc src/main/native/MonkC/MCTrampoline.S)
-set_property(SOURCE ${MCTrampolineSrc} PROPERTY LANGUAGE C)
 
 set(MonkCDir           src/main/native/MonkC)
 set(BEAssetsDir        src/main/native/BEAssets)
@@ -28,7 +26,6 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             ${MCTrampolineSrc}
              ${MonkCSrc}
              ${BEAssetsSrc}
              ${BEEngineSrc}
