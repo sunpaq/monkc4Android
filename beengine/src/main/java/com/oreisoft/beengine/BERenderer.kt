@@ -28,8 +28,17 @@ class BERenderer(private val context: Context): GLSurfaceView.Renderer {
     private val TAG = "BERenderer"
 
     var delegate: BERendererDelegate? = null
+
     var doesAutoRotateCamera: Boolean = false
+        set(value) {
+            BENativeRenderer.setCameraAutoRotation(value)
+        }
+
     var doesDrawWireFrame: Boolean = false
+        set(value) {
+            BENativeRenderer.setDoesDrawWireFrame(value)
+        }
+
     //CMRotationMatrix deviceRotateMat3;
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
@@ -119,6 +128,10 @@ class BERenderer(private val context: Context): GLSurfaceView.Renderer {
 
     //-(void) cameraRotate:(GLKMatrix3)mat3 Incremental:(BOOL)inc;
     //-(void) cameraTranslate:(GLKVector3)vec3 Incremental:(BOOL)inc;
+    fun cameraTranslate(x: Float, y: Float, z:Float, incremental: Boolean) {
+        BENativeRenderer.cameraTranslate(x,y,z,incremental)
+    }
+
     //-(void) cameraAspectRatioReset:(float)aspectRatio;
     //-(void) cameraFOVReset:(float)fov;
 
@@ -129,8 +142,15 @@ class BERenderer(private val context: Context): GLSurfaceView.Renderer {
     //-(void) lightReset:(GLKVector3*)pos;
 
     //-(void) rotateModelByPanGesture:(CGPoint)offset;
+    fun rotateModelByPanGesture(x:Float, y:Float) {
+        BENativeRenderer.onGestureScroll(x.toDouble(), y.toDouble())
+    }
+
     //-(void) rotateSkysphByPanGesture:(CGPoint)offset;
     //-(void) zoomModelByPinchGesture:(CGFloat)scale;
+    fun zoomModelByPinchGesture(scale: Float) {
+        BENativeRenderer.onGestureScale(scale)
+    }
 
     //-(void) updateModelTag:(int)tag PoseMat4D:(double*)mat4;
     //-(void) updateModelTag:(int)tag PoseMat4F:(float*)mat4;

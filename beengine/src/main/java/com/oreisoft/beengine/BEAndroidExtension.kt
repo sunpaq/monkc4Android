@@ -8,6 +8,9 @@ import android.view.View
  * Created by sunyuli on 2/28/2018 AD.
  */
 
+
+
+
 fun View.hideSystemUI() {
     // Set the IMMERSIVE flag.
     // Set the content to appear under the system bars so that the content

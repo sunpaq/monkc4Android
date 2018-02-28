@@ -19,4 +19,9 @@ object BENativeRenderer {
     external fun onGestureScroll(x: Double, y: Double)
     external fun cacheTextureNamed(name: String)
     external fun setCameraAutoRotation(autorotate: Boolean)
+    external fun setDoesDrawWireFrame(wiremode: Boolean)
+
+    external fun cameraTranslate(x: Float, y: Float, z: Float, incremental: Boolean)
+    external fun cameraDistanceScale(scale: Double, min: Double, max: Double)
+
 }

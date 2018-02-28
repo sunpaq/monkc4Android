@@ -8,6 +8,10 @@ import android.util.Size
 import android.view.*
 
 import javax.microedition.khronos.opengles.GL10
+import android.view.KeyEvent.KEYCODE_BUTTON_A
+import android.view.KeyEvent.KEYCODE_DPAD_CENTER
+import org.xml.sax.InputSource
+
 
 /**
  * Created by sunyuli on 2016/12/11.
@@ -30,6 +34,7 @@ class BEView(context: Context) : GLSurfaceView(context), BERenderer.BERendererDe
 
     var delegate: BEViewDelegate? = null
     var renderer: BERenderer? = null
+    var controller: BEGameController? = null
 
     init {
 
@@ -42,6 +47,8 @@ class BEView(context: Context) : GLSurfaceView(context), BERenderer.BERendererDe
 
         renderer = BERenderer(context)
         renderer?.delegate = this
+        controller = BEGameController()
+        controller?.renderer = renderer
         setRenderer(renderer)
 
         mScaleDetector = ScaleGestureDetector(context, ScaleListener())
@@ -63,11 +70,11 @@ class BEView(context: Context) : GLSurfaceView(context), BERenderer.BERendererDe
     }
 
     override fun willDrawFrame() {
-
+        delegate?.beforeDrawFrame()
     }
 
     override fun didDrawFrame() {
-
+        delegate?.afterDrawFrame()
     }
 
     private inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
@@ -85,6 +92,4 @@ class BEView(context: Context) : GLSurfaceView(context), BERenderer.BERendererDe
             return true
         }
     }
-
-
 }
