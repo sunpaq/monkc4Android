@@ -31,7 +31,7 @@ class GLActivity : Activity(), BEView.BEViewDelegate {
     override fun onBERendererPrepared(renderer: BERenderer) {
         beview?.let {
             print("MainActivity - onBERendererPrepared")
-            it.hideSystemUI()
+            //it.hideSystemUI()
             it.renderer?.addModelNamed("maya-blender.obj")
         }
     }

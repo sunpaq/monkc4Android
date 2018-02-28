@@ -3,6 +3,7 @@ package com.oreisoft.beengine
 import android.content.Context
 import android.graphics.Rect
 import android.opengl.GLSurfaceView
+import android.opengl.Matrix
 import android.util.Size
 import org.jetbrains.anko.doAsync
 import javax.microedition.khronos.egl.EGLConfig
@@ -159,6 +160,9 @@ class BERenderer(private val context: Context): GLSurfaceView.Renderer {
     //-(void) drawFrame:(CGRect)viewport;
     //-(void) drawFrame:(CGRect)viewport vrHeadTransform:(GLKMatrix4)head vrEyeTransform:(GLKMatrix4)eye;
     //-(void) drawFrame:(CGRect)viewport vrHeadTransform:(GLKMatrix4)head vrEyeTransform:(GLKMatrix4)eye vrFOV:(CGFloat)fov;
+//    fun drawFrame(viewport: Rect, head: Matrix, eye: Matrix, fov: Float) {
+//
+//    }
 
     //-(void) drawFrameOnCALayer:(CALayer*)calayer;
     //-(void) drawFrameOnGLView:(GLKView*)glview;

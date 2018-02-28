@@ -1,5 +1,8 @@
 package com.oreisoft.beengine
 
+import android.graphics.Rect
+import android.opengl.Matrix
+
 /**
  * Created by sunyuli on 11/10/2017 AD.
  */
@@ -23,5 +26,7 @@ object BENativeRenderer {
 
     external fun cameraTranslate(x: Float, y: Float, z: Float, incremental: Boolean)
     external fun cameraDistanceScale(scale: Double, min: Double, max: Double)
+
+    external fun drawFrame(viewport: Rect, head: Matrix, eye: Matrix, fov: Float)
 
 }
