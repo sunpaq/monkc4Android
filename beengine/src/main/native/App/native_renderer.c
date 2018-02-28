@@ -222,16 +222,20 @@ void onGesturePan(double x, double y)
     }
 }
 
+void cameraDistanceScale(double scale, double min, double max)
+{
+    double limited_scale = MAX(min, MIN(scale, max));
+    MCCamera* camera = director->lastScene->mainCamera;
+    if (director != null && director->lastScene != null && camera != null) {
+        MCCamera_distanceScale(camera, MCFloatF(1.0/limited_scale));
+    }
+}
+
 static float pinch_scale = 1.0;
 void onGesturePinch(double scale)
 {
     pinch_scale *= scale;
-    pinch_scale = MAX(0.1, MIN(pinch_scale, 100.0));
-
-    MCCamera* camera = director->lastScene->mainCamera;
-    if (director != null && director->lastScene != null && camera != null) {
-        MCCamera_distanceScale(camera, MCFloatF(1.0/pinch_scale));
-    }
+    cameraDistanceScale(pinch_scale, 0.1, 100);
 }
 
 void onResizeScreen(int windowWidth, int windowHeight)
@@ -398,4 +402,31 @@ java(void, setCameraAutoRotation, jboolean autorotate)
     } else {
         director->lastScene->cameraAutoRotate = false;
     }
+}
+
+java(void, setDoesDrawWireFrame, jboolean wiremode)
+{
+    if (wiremode == true) {
+        computed(director, contextHandler)->drawMode = MCLineStrip;
+    } else {
+        computed(director, contextHandler)->drawMode = MCTriAngles;
+    }
+}
+
+java(void, cameraTranslate, jfloat x, jfloat y, jfloat z, jboolean incremental)
+{
+    if (!director) return;
+    MCCamera* cam = computed(director, cameraHandler);
+    if (cam) {
+        MCVector3 eye = MCVector3Make(x, y, z);
+        cam->R_value = MCVector3Length(eye);
+        cam->eye = eye;
+        MCVector3 v3 = {x, y, z};
+        MC3DNode_translateVec3(&cam->Super, &v3, incremental?true:false);
+    }
+}
+
+java(void, cameraDistanceScale, jdouble scale, jdouble min, jdouble max)
+{
+    cameraDistanceScale(scale, min, max);
 }
