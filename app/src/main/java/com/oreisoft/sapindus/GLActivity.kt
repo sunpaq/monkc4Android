@@ -39,18 +39,20 @@ class GLActivity : Activity(), BEView.BEViewDelegate {
     var zoomLock = false
     override fun beforeDrawFrame() {
         BEGameController.shared()?.let {
-            //if (it.leftStickPressed) {
+            if (it.connected) {
+                //if (it.leftStickPressed) {
                 it.renderer?.rotateModelByPanGesture(it.leftStickX, it.rightStickY)
-            //}
-            if (it.leftShouderPressed) {
-                zoomLock = true
-            }
-            if (it.rightShouderPressed) {
-                zoomLock = false
-            }
-            if (zoomLock == false) {
-                var camDisScale = it.rightTriggerValue.toDouble() * 2.1
-                BENativeRenderer.cameraDistanceScale(camDisScale, 0.4, 2.0)
+                //}
+                if (it.leftShouderPressed) {
+                    zoomLock = true
+                }
+                if (it.rightShouderPressed) {
+                    zoomLock = false
+                }
+                if (zoomLock == false) {
+                    var camDisScale = it.rightTriggerValue.toDouble() * 2.1
+                    BENativeRenderer.cameraDistanceScale(camDisScale, 0.4, 2.0)
+                }
             }
         }
     }

@@ -14,6 +14,8 @@ class BEGameController {
 
     var renderer: BERenderer? = null
 
+    var connected: Boolean = false
+
     var leftStickX: Float = 0.toFloat()
     var leftStickY: Float = 0.toFloat()
     var leftStickPressed: Boolean = false
@@ -36,8 +38,20 @@ class BEGameController {
         fun shared() : BEGameController? {
             if (instance == null) {
                 instance = BEGameController()
+                instance?.detectControllers()
             }
             return instance
+        }
+    }
+
+    fun detectControllers() {
+        val ids = InputDevice.getDeviceIds()
+        for (id in ids) {
+            val dev = InputDevice.getDevice(id)
+            val sources = dev.sources
+            if (sources.and(InputDevice.SOURCE_JOYSTICK) == InputDevice.SOURCE_JOYSTICK) {
+                connected = true
+            }
         }
     }
 
@@ -77,7 +91,7 @@ class BEGameController {
     }
 
     fun handleKeyUp(keyCode: Int, event: KeyEvent?) : Boolean {
-        var handled = false;
+        var handled = false
         //val result = event?.source?.and(InputDevice.SOURCE_JOYSTICK)
         //if (result == InputDevice.SOURCE_JOYSTICK) {
             if (event?.repeatCount == 0) {
