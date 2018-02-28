@@ -115,8 +115,8 @@ void onOpenFile(const char* filename)
             //ff(director->skyboxThread, start, 0);
         //}
 
-        openFileAsync(filename);
-        //openFile(filename);
+        //openFileAsync(filename);
+        openFile(filename);
     }
 }
 

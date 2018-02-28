@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Rect
 import android.opengl.GLSurfaceView
 import android.util.Size
+import org.jetbrains.anko.doAsync
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -91,12 +92,16 @@ class BERenderer(private val context: Context): GLSurfaceView.Renderer {
     //-(void) removeCurrentModel;
     //-(void) addModelNamed:(NSString*)modelName;
     fun addModelNamed(modelName: String) {
-        BENativeRenderer.openFile(modelName)
+        doAsync {
+            BENativeRenderer.openFile(modelName)
+        }
     }
 
     //-(void) addModelNamed:(NSString*)modelName Scale:(double)scale;
     fun addModelNamed(modelName: String, scale: Double) {
-        BENativeRenderer.openFile(modelName)
+        doAsync {
+            BENativeRenderer.openFile(modelName)
+        }
     }
 
     //-(void) addModelNamed:(NSString*)modelName Scale:(double)scale RotateX:(double)ccwRadian;

@@ -6,6 +6,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.oreisoft.beengine.BEResource
+import org.jetbrains.anko.AnkoAsyncContext
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
+import java.lang.ref.WeakReference
 
 class MainActivity : Activity() {
 
@@ -23,11 +27,13 @@ class MainActivity : Activity() {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) {
-            BEResource.Companion.shared(this)?.preloadTextures("jpg")
-
-            findViewById(R.id.loading_status).visibility = View.INVISIBLE
-            findViewById(R.id.start_button).visibility = View.VISIBLE
+        val ctx = this
+        doAsync {
+            BEResource.Companion.shared(ctx)?.preloadTextures("jpg")
+            uiThread {
+                findViewById(R.id.loading_status).visibility = View.INVISIBLE
+                findViewById(R.id.start_button).visibility = View.VISIBLE
+            }
         }
     }
 
@@ -37,3 +43,4 @@ class MainActivity : Activity() {
     }
 
 }
+
