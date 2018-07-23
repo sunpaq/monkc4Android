@@ -1,4 +1,3 @@
-#include <jni.h>
 #include <GLES3/gl3.h>
 #include "monkc.h"
 #include "MCJNI.h"
@@ -327,9 +326,7 @@ void cameraCommand(MC3DiOS_CameraCmd* cmd)
     }
 }
 
-#define java(type, name, ...) jni(Java_com_oreisoft_beengine_BENativeRenderer, type, name, __VA_ARGS__)
-
-java(void, initialGL, voida)
+java(BENativeRenderer, void, initialGL, voida)
 {
     const char* gles_version = (const char*)glGetString(GL_VERSION);
     const char* glsl_version = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
@@ -348,7 +345,7 @@ java(void, initialGL, voida)
 //java(void, loadModelBegin);
 //java(void, loadModelFinish);
 
-java(void, openFile, jstring name)
+java(BENativeRenderer, void, openFile, jstring name)
 {
     const char* f = CStringFromJavaString(name);
     onOpenFile(f);
@@ -356,34 +353,34 @@ java(void, openFile, jstring name)
     error_log("[not a error] JNI openFile called");
 }
 
-java(void, resize, jint width, jint height)
+java(BENativeRenderer, void, resize, jint width, jint height)
 {
     onResizeScreen(width, height);
     error_log("[not a error] JNI resize called");
 }
 
-java(void, render, voida)
+java(BENativeRenderer, void, render, voida)
 {
     onUpdate(0,0,0,0);
     onDraw();
 }
 
-java(void, setAssetManager, jobject man)
+java(BENativeRenderer, void, setAssetManager, jobject man)
 {
     MCFileSetAssetManager(AAssetManager_fromJava(env, man));
 }
 
-java(void, onGestureScale, jfloat scale)
+java(BENativeRenderer, void, onGestureScale, jfloat scale)
 {
     onGesturePinch(scale);
 }
 
-java(void, onGestureScroll, jdouble x, jdouble y)
+java(BENativeRenderer, void, onGestureScroll, jdouble x, jdouble y)
 {
     onGesturePan(x, y);
 }
 
-java(void, cacheTextureNamed, jstring name)
+java(BENativeRenderer, void, cacheTextureNamed, jstring name)
 {
     const char* cname = CStringFromJavaString(name);
     MCTextureCache* tcache = MCTextureCache_shared(0);
@@ -395,7 +392,7 @@ java(void, cacheTextureNamed, jstring name)
     CStringRelease(name, cname);
 }
 
-java(void, setCameraAutoRotation, jboolean autorotate)
+java(BENativeRenderer, void, setCameraAutoRotation, jboolean autorotate)
 {
     if (autorotate == true) {
         director->lastScene->cameraAutoRotate = true;
@@ -404,7 +401,7 @@ java(void, setCameraAutoRotation, jboolean autorotate)
     }
 }
 
-java(void, setDoesDrawWireFrame, jboolean wiremode)
+java(BENativeRenderer, void, setDoesDrawWireFrame, jboolean wiremode)
 {
     if (wiremode == true) {
         computed(director, contextHandler)->drawMode = MCLineStrip;
@@ -413,7 +410,7 @@ java(void, setDoesDrawWireFrame, jboolean wiremode)
     }
 }
 
-java(void, cameraTranslate, jfloat x, jfloat y, jfloat z, jboolean incremental)
+java(BENativeRenderer, void, cameraTranslate, jfloat x, jfloat y, jfloat z, jboolean incremental)
 {
     if (!director) return;
     MCCamera* cam = computed(director, cameraHandler);
@@ -426,7 +423,15 @@ java(void, cameraTranslate, jfloat x, jfloat y, jfloat z, jboolean incremental)
     }
 }
 
-java(void, cameraDistanceScale, jdouble scale, jdouble min, jdouble max)
+java(BENativeRenderer, void, cameraDistanceScale, jdouble scale, jdouble min, jdouble max)
 {
     cameraDistanceScale(scale, min, max);
 }
+
+//external fun metaCall(classname: String, methodname: String)
+java(BENativeRenderer, void, metaCall, jstring methodname)
+{
+    const char* str = CStringFromJavaString(methodname);
+    msg(director, str, 0);
+}
+

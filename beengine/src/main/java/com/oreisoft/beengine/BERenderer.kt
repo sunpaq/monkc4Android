@@ -63,6 +63,7 @@ class BERenderer(private val context: Context): GLSurfaceView.Renderer {
 
     fun initRenderer() {
         BENativeRenderer.initialGL()
+        BENativeRenderer.metaCall("printDebugInfo")
     }
 
     fun cacheTextureNamed(name: String) {

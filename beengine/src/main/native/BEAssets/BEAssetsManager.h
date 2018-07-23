@@ -9,19 +9,17 @@
 #ifndef BEAssetsManager_h
 #define BEAssetsManager_h
 
+#ifdef __APPLE__
+#include <sys/types.h>
+#endif
+
 #ifdef __ANDROID__
 #include <android/native_window.h>
 #include <android/asset_manager.h>
-#endif
+#include <android/asset_manager_jni.h>
 
-//File
-#ifdef __ANDROID__
 void MCFileSetAssetManager(AAssetManager* assetManager);
 AAssetManager* MCFileGetAssetManager();
-#endif
-
-#ifdef __APPLE__
-#include <sys/types.h>
 #endif
 
 //return 0 if success

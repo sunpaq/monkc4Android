@@ -29,4 +29,5 @@ object BENativeRenderer {
 
     external fun drawFrame(viewport: Rect, head: Matrix, eye: Matrix, fov: Float)
 
+    external fun metaCall(methodname: String)
 }
