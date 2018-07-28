@@ -9,7 +9,7 @@
 #ifndef MC2DTex_h
 #define MC2DTex_h
 
-#include "monkc.h"
+#include "monkc_export.h"
 #include "MCTexture.h"
 
 class(MC2DTex, MCTexture);

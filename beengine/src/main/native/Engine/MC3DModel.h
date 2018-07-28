@@ -9,13 +9,9 @@
 #ifndef MC3DModel_h
 #define MC3DModel_h
 
-#include "monkc.h"
-#include "MCGLBase.h"
-#include "MCMesh.h"
-#include "MCTexture.h"
-#include "MCIO.h"
+#include "monkc_export.h"
 #include "MC3DNode.h"
-#include "MCMath.h"
+#include "MCTexture.h"
 
 class(MC3DModel, MC3DNode,
       int tag;
@@ -45,8 +41,5 @@ method(MC3DModel, void, rotateAroundSelfAxisY, double ccwRadian);
 method(MC3DModel, void, rotateAroundSelfAxisZ, double ccwRadian);
 //resize
 method(MC3DModel, void, resizeToFit, double maxsize);
-//override
-method(MC3DModel, void, update, MCGLContext* ctx);
-method(MC3DModel, void, draw, MCGLContext* ctx);
 
 #endif /* MC3DModel_h */

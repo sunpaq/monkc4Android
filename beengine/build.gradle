@@ -13,7 +13,7 @@ android {
         externalNativeBuild {
             cmake {
                 arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_TOOLCHAIN=clang"
-                cFlags "-std=c99"
+                cFlags "-std=c99 -D__ANDROID__ -Wno-unused"
             }
         }
         ndk {

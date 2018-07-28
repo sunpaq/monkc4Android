@@ -1,5 +1,9 @@
 #include "MCIO.h"
-#include "MCLexer.h"
+
+#include <limits.h>
+#ifndef LINE_MAX
+#define LINE_MAX 2048
+#endif
 
 #pragma mark - MCFile unbuffered IO
 

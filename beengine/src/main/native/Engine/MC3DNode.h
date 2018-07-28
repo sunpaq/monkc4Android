@@ -9,20 +9,21 @@
 #ifndef MC3DNode_h
 #define MC3DNode_h
 
-#include "monkc.h"
+#include "monkc_export.h"
 #include "MC3DBase.h"
-#include "MCMesh.h"
 #include "MCTexture.h"
 #include "MCMaterial.h"
 #include "MCTexture.h"
-#include "MCGLContext.h"
 
 class(MC3DNode, MCItem,
       MCUInt index;
       MCInt zorder;
       MCBool visible;
+
+      MCBool overrideDraw;
+      MCBool receiveEvent;
+
       MCVector3 center;
-      
       MCMatrix4 transform;
       MCMatrix4 viewtrans;
 
@@ -54,8 +55,10 @@ method(MC3DNode, void, rotateMat4, float mat4[16], MCBool incremental);
 method(MC3DNode, void, scaleVec3, MCVector3* factors, MCBool incremental);
 
 //draw
-method(MC3DNode, void, update, MCGLContext* ctx);
-method(MC3DNode, void, draw, MCGLContext* ctx);
+method(MC3DNode, void, willDraw, MCMatrix4* projection, MCMatrix4* view, MCMatrix4* model);
+method(MC3DNode, void, didDraw, voida);
+method(MC3DNode, void, draw, voida);
+method(MC3DNode, void, show, voida);
 method(MC3DNode, void, hide, voida);
 method(MC3DNode, void, show, voida);
 

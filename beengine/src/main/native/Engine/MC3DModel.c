@@ -12,6 +12,7 @@
 #include "MCMath.h"
 #include "MCLinkedList.h"
 #include "MCTextureCache.h"
+#include "MCMesh.h"
 
 compute(MC3DFrame, frame)
 {
@@ -101,7 +102,7 @@ method(MC3DModel, void, bye, voida)
     MC3DNode_bye(sobj, 0);
 }
 
-function(void, meshLoadFaceElement, MCMesh* mesh, BAObjData* buff, BAFaceElement e, size_t offset, MCColorf color)
+function(void, meshLoadFaceElement, MCMesh* mesh, BAObjData* buff, BAFaceElement e, size_t index, MCColorf color)
 {
     MCVector3 v, n;
     MCVector2 t;
@@ -143,7 +144,7 @@ function(void, meshLoadFaceElement, MCMesh* mesh, BAObjData* buff, BAFaceElement
     MCMath_accumulateMind(&buff->Frame.ymin, v.y);
     MCMath_accumulateMind(&buff->Frame.zmin, v.z);
 
-    MCMeshVertexData data = {
+    MCVertexData data = {
             v.x, v.y, v.z,
             n.x, n.y, n.z,
             color.R.f, color.G.f, color.B.f,
@@ -151,18 +152,18 @@ function(void, meshLoadFaceElement, MCMesh* mesh, BAObjData* buff, BAFaceElement
             //0,0
     };
 
-    MCMesh_setVertex(mesh, (GLuint)offset, &data);
+    MCMesh_setVertex(mesh, (uint32_t)index, &data);
 }
 
 function(MCMesh*, createMeshWithBATriangles, BATriangle* triangles, size_t tricount, BAObjData* buff, MCColorf color)
 {
-    MCMesh* mesh = MCMesh_initWithDefaultVertexAttributes(new(MCMesh), (GLsizei)tricount*3);
+    MCMesh* mesh = MCMesh_initWithVertexCount(new(MCMesh), (int32_t)tricount*3);
     
     for (size_t i=0; i<tricount; i++) {
-        size_t offset = i * 33;
-        meshLoadFaceElement(null, mesh, buff, triangles[i].e1, offset+0, color);
-        meshLoadFaceElement(null, mesh, buff, triangles[i].e2, offset+11, color);
-        meshLoadFaceElement(null, mesh, buff, triangles[i].e3, offset+22, color);
+        size_t index = i * 3;
+        meshLoadFaceElement(null, mesh, buff, triangles[i].e1, index+0, color);
+        meshLoadFaceElement(null, mesh, buff, triangles[i].e2, index+1, color);
+        meshLoadFaceElement(null, mesh, buff, triangles[i].e3, index+2, color);
     }
     
     //normalize normal
@@ -294,8 +295,6 @@ function(MC3DModel*, initModel, BAObjData* buff, BAMesh* bamesh, MCColorf color)
         //set mtl
         if (mtl) {
             setMaterialForNode(null, &model->Super, mtl);
-
-
         }else{
             setDefaultMaterialForNode(null, &model->Super);
         }
@@ -406,23 +405,14 @@ method(MC3DModel, void, resizeToFit, double maxsize)
 {
     if (var(fitted) == false) {
         double maxl  = cpt(maxlength);
-        double scale = maxsize / maxl;
-        MCVector3 scaleVec = MCVector3Make(scale, scale, scale);
-        MC3DNode_scaleVec3(sobj, &scaleVec, false);
-        var(fitted) = true;
-        debug_log("MC3DModel - model maxlength=%lf scale=%lf\n", maxl, scale);
+        if (maxl > DBL_EPSILON) {
+            double scale = maxsize / maxl;
+            MCVector3 scaleVec = MCVector3Make(scale, scale, scale);
+            MC3DNode_scaleVec3(sobj, &scaleVec, false);
+            var(fitted) = true;
+            debug_log("MC3DModel - model maxlength=%lf scale=%lf\n", maxl, scale);
+        }
     }
-}
-
-//override
-method(MC3DModel, void, update, MCGLContext* ctx)
-{
-    MC3DNode_update(sobj, ctx);
-}
-
-method(MC3DModel, void, draw, MCGLContext* ctx)
-{
-    MC3DNode_draw(sobj, ctx);
 }
 
 onload(MC3DModel)
@@ -437,9 +427,6 @@ onload(MC3DModel)
         binding(MC3DModel, void, rotateAroundSelfAxisY, double ccwRadian);
         binding(MC3DModel, void, rotateAroundSelfAxisZ, double ccwRadian);
         binding(MC3DModel, void, resizeToFit, double maxsize);
-        //override
-        binding(MC3DModel, void, update, MCGLContext* ctx);
-        binding(MC3DModel, void, draw, MCGLContext* ctx);
         binding(MC3DModel, void, translateToOrigin, voida);
         return cla;
     }else{

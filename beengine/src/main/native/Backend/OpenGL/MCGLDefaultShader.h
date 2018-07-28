@@ -1,17 +1,39 @@
 //
-//  MCGLShader.c
-//  monkcGame
+//  MCGLDefaultShader.h
+//  BohdiEngine
 //
-//  Created by SunYuLi on 15/11/22.
-//  Copyright © 2015年 oreisoft. All rights reserved.
+//  Created by 孙御礼 on 5/3/30 H.
 //
 
-#include "MCGLRenderer.h"
-#include "MCGLEngine.h"
-#include "MC3DBase.h"
-#include "MCIO.h"
+#ifndef MCGLDefaultShader_h
+#define MCGLDefaultShader_h
 
-static const char* VCODE = S(
+#include "monkc_export.h"
+
+MCGlobalKey view_view       = "view_view";
+MCGlobalKey view_projection = "view_projection";
+MCGlobalKey view_position   = "view_position";
+
+MCGlobalKey model_model     = "model_model";
+MCGlobalKey model_normal    = "model_normal";
+
+MCGlobalKey light_ambient   = "light_ambient";
+MCGlobalKey light_diffuse   = "light_diffuse";
+MCGlobalKey light_specular  = "light_specular";
+MCGlobalKey light_color     = "light_color";
+MCGlobalKey light_position  = "light_position";
+
+MCGlobalKey material_ambient   = "material_ambient";
+MCGlobalKey material_diffuse   = "material_diffuse";
+MCGlobalKey material_specular  = "material_specular";
+MCGlobalKey material_dissolve  = "material_dissolve";
+MCGlobalKey material_shininess = "material_shininess";
+
+MCGlobalKey diffuse_sampler = "diffuse_sampler";
+MCGlobalKey specular_sampler = "specular_sampler";
+
+
+static const char* MCGLDefault_vsource = S(
 //version is specified in MCGLContext
 precision highp float;
 precision mediump int;
@@ -21,15 +43,15 @@ layout (location=0) in vec4 position;
 layout (location=1) in vec3 normal;
 layout (location=2) in vec3 color;
 layout (location=3) in vec2 texcoord;
-
+                             
 //Android GLSL doesn't support struct
 uniform mat4 view_view;
 uniform mat4 view_projection;
 uniform vec3 view_position;
-
+                             
 uniform mat4 model_model;
 uniform mat3 model_normal;
-
+                             
 //varying variables use to pass value between vertex & fragment shader
 out vec3 vertexcolor;
 out vec2 texturecoord;
@@ -62,13 +84,13 @@ void main()
 }
 );//VCODE END
 
-static const char* FCODE = S(
+static const char* MCGLDefault_fsource = S(
 //version is specified in MCGLContext
 precision highp sampler3D;
 precision highp float;
 precision lowp int;
 const float Epsilon = 0.0000001;
-
+                             
 //varying variables use to pass value between vertex & fragment shader
 in vec3 vertexcolor;
 in vec2 texturecoord;
@@ -121,14 +143,14 @@ vec3 reflectVector(vec3 L, vec3 N)
     //    return 2.0*dotNL*N - L;
     return reflect(-L,N);
 }
-
+                             
 //doen't contains Ka*Ia
 vec3 lambertianShading(vec3 Kd, vec3 Id, vec3 L, vec3 N)
 {
     float dotNL = max(0.0,dot(N,L));
     return Kd*Id*dotNL;
 }
-
+                             
 //doen't contains Ka*Ia
 vec3 phongShading(vec3 Kd, vec3 Ks, vec3 Id, vec3 Is, float Es, vec3 L, vec3 N, vec3 V, bool simplified)
 {
@@ -269,174 +291,4 @@ void main()
 }
 );//FCODE END
 
-static MCHash _draw;
-static MCHash _update;
-
-static void prehash()
-{
-    _draw = hash("draw");
-    _update = hash("update");
-}
-
-oninit(MCGLRenderer)
-{
-    if(init(MCObject)){
-        MCGLEngine_featureSwith(MCGLDepthTest, true);
-        MCGLEngine_featureSwith(MCGLStencilTest, true);
-        MCGLEngine_featureSwith(MCGLCullFace, true);
-
-        MCGLEngine_cullFace(MCGLBack);
-        MCGLEngine_setFrontCounterClockWise(true);//CCW
-
-        //glDepthFunc(GL_LESS);
-        
-        // Enable blending
-        //glEnable(GL_BLEND);
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
-        obj->context = new(MCGLContext);
-
-        return obj;
-    }else{
-        return null;
-    }
-}
-
-method(MCGLRenderer, void, bye, voida)
-{
-    release(obj->context);
-    superbye(MCObject);
-}
-
-method(MCGLRenderer, MCGLRenderer*, initWithShaderCodeString, const char* vcode, const char* fcode)
-{
-    MCGLContext_initWithShaderCode(obj->context, vcode, fcode,
-        (const char* []){
-            "position",
-            "normal",
-            "color",
-            "texcoord"
-        }, 4,
-        (MCGLUniformType []){
-            MCGLUniformMat4,
-            MCGLUniformMat4,
-            MCGLUniformVec3,
-            
-            MCGLUniformMat4,
-            MCGLUniformMat3,
-            
-            MCGLUniformVec3,
-            MCGLUniformVec3,
-            MCGLUniformVec3,
-            MCGLUniformVec3,
-            MCGLUniformVec3,
-
-            MCGLUniformVec3,
-            MCGLUniformVec3,
-            MCGLUniformVec3,
-            MCGLUniformVec1,
-            MCGLUniformVec1,
-            
-            MCGLUniformScalar,
-            MCGLUniformScalar
-        },
-        (const char* []){
-            view_view,
-            view_projection,
-            view_position,
-            
-            model_model,
-            model_normal,
-            
-            light_ambient,
-            light_diffuse,
-            light_specular,
-            light_color,
-            light_position,
-            
-            material_ambient,
-            material_diffuse,
-            material_specular,
-            material_dissolve,
-            material_shininess,
-            
-            diffuse_sampler,
-            specular_sampler
-        }, 17);
-    return obj;
-}
-
-method(MCGLRenderer, MCGLRenderer*, initWithShaderFileName, const char* vshader, const char* fshader)
-{
-    char path[LINE_MAX];
-    MCFileGetPath(vshader, path);
-    const char* vcode = MCFileCopyContentWithPath(path);
-    
-    MCFileGetPath(fshader, path);
-    const char* fcode = MCFileCopyContentWithPath(path);
-    
-    MCGLRenderer_initWithShaderCodeString(obj, vcode, fcode);
-    
-    free((void*)vcode);
-    free((void*)fcode);
-    return obj;
-}
-
-method(MCGLRenderer, MCGLRenderer*, initWithDefaultShader, voida)
-{
-    return MCGLRenderer_initWithShaderCodeString(obj, VCODE, FCODE);
-}
-
-method(MCGLRenderer, void, updateNodes, MC3DNode* rootnode)
-{
-    //update nodes
-    if (rootnode != null) {
-        ff(rootnode, update, obj->context);
-    }
-}
-
-method(MCGLRenderer, void, drawNodes, MC3DNode* rootnode)
-{
-    if (rootnode != null) {
-        ff(rootnode, draw, obj->context);
-        //make FPS stable motion more smooth
-        //MCGLEngine_flushCommandBlock(0);
-        //MCGLEngine_flushCommandAsync(0);
-    }
-}
-
-method(MCGLRenderer, void, drawMesh, MCMesh* mesh)
-{
-
-}
-
-method(MCGLRenderer, void, drawMaterial, MCMaterial* material)
-{
-    
-}
-
-method(MCGLRenderer, void, drawTexture, MCTexture* texture)
-{
-    
-}
-
-onload(MCGLRenderer)
-{
-    if (load(MCObject)) {
-        prehash();
-        binding(MCGLRenderer, void, bye, voida);
-        binding(MCGLRenderer, MCGLRenderer*, initWithShaderCodeString, const char* vcode, const char* fcode);
-        binding(MCGLRenderer, MCGLRenderer*, initWithShaderFileName, const char* vshader, const char* fshader);
-        binding(MCGLRenderer, void, updateNodes, MC3DNode* rootnode);
-        binding(MCGLRenderer, void, drawNodes, MC3DNode* rootnode);
-        binding(MCGLRenderer, void, drawMesh, MCMesh* mesh);
-        binding(MCGLRenderer, void, drawMaterial, MCMaterial* material);
-        binding(MCGLRenderer, void, drawTexture, MCTexture* texture);
-        return cla;
-    }else{
-        return null;
-    }
-}
-
-
-
+#endif /* MCGLDefaultShader_h */

@@ -9,17 +9,22 @@
 #ifndef BEAssetsManager_h
 #define BEAssetsManager_h
 
-#ifdef __APPLE__
-#include <sys/types.h>
-#endif
+#include "monkc_export.h"
+#include "BALexer.h"
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__)
 #include <android/native_window.h>
 #include <android/asset_manager.h>
-#include <android/asset_manager_jni.h>
+#endif
 
+//File
+#if defined(__ANDROID__)
 void MCFileSetAssetManager(AAssetManager* assetManager);
 AAssetManager* MCFileGetAssetManager();
+#endif
+
+#ifdef __APPLE__
+#include <sys/types.h>
 #endif
 
 //return 0 if success
@@ -29,6 +34,6 @@ int MCFileGetPathFromBundle(const char* bundlename, const char* filename, char* 
 const char* MCFileCopyContent(const char* filename);
 const char* MCFileCopyContentWithPath(const char* filepath);
 const char* MCFileCopyContentWithPathGetBufferSize(const char* filepath, off_t* buffsize);
-void MCFileReleaseContent(void* buff);
+void MCFileReleaseContent(const char* buff);
 
 #endif /* BEAssetsManager_h */

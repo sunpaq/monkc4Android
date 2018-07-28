@@ -8,9 +8,7 @@
 
 #ifdef __ANDROID__
 
-#include "monkc.h"
-#include <stdio.h>
-#include "MC3DiOS.h"
+#include "../MonkC/monkc.h"
 
 //MCGL Errors
 void MCGLError(const char* errmsg)

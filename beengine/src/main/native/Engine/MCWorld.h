@@ -9,8 +9,7 @@
 #ifndef MCWorld_h
 #define MCWorld_h
 
-#include "monkc.h"
-#include "MCGLBase.h"
+#include "monkc_export.h"
 
 class(MCWorld, MCObject);
 

@@ -8,9 +8,8 @@
 #ifndef MCTextureCache_h
 #define MCTextureCache_h
 
-#include "monkc.h"
+#include "monkc_export.h"
 #include "MCTexture.h"
-#include "MCMap.h"
 
 class(MCTextureCache, MCObject,
       MCMap* map);
