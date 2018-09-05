@@ -2,11 +2,12 @@ cmake_minimum_required(VERSION 3.4.1)
 
 enable_language(ASM C)
 
-set(MonkCDir           src/main/native/MonkC)
-set(BEAssetsDir        src/main/native/BEAssets)
-set(BEEngineDir        src/main/native/Engine)
-set(SOILDir            src/main/native/BEAssets/external/SOIL)
-set(MCDriverDir        src/main/native/MCDriver)
+set(SOILDir            src/main/native/External/SOIL)
+set(MonkCDir           src/main/native/Classes/MonkC)
+set(BEAssetsDir        src/main/native/Classes/BEAssets)
+set(BackendDir         src/main/native/Classes/Backend/OpenGL)
+set(BEEngineDir        src/main/native/Classes/Engine)
+set(InterfaceDir       src/main/native/Classes/Interface)
 set(AppDir             src/main/native/App)
 
 # Monk-C
@@ -14,9 +15,10 @@ aux_source_directory(${MonkCDir}     MonkCSrc)
 # BohdiEngine
 aux_source_directory(${BEAssetsDir}  BEAssetsSrc)
 aux_source_directory(${BEEngineDir}  BEEngineSrc)
+aux_source_directory(${BackendDir}   BackendSrc)
 aux_source_directory(${SOILDir}      SOILSrc)
 # App
-aux_source_directory(${MCDriverDir}  MCDriverSrc)
+aux_source_directory(${InterfaceDir} InterfaceSrc)
 aux_source_directory(${AppDir}       AppSrc)
 
 add_library( # Sets the name of the library.
@@ -28,17 +30,20 @@ add_library( # Sets the name of the library.
              # Provides a relative path to your source file(s).
              ${MonkCSrc}
              ${BEAssetsSrc}
+             ${BackendSrc}
              ${BEEngineSrc}
+
              ${SOILSrc}
-             ${MCDriverSrc}
+             ${InterfaceSrc}
              ${AppSrc})
 
 include_directories(
              ${MonkCDir}
              ${BEAssetsDir}
              ${BEEngineDir}
+             ${BackendDir}
              ${SOILDir}
-             ${MCDriverDir}
+             ${InterfaceDir}
              ${AppDir})
 
 find_library(log-lib log)
