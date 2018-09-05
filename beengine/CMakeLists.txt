@@ -2,12 +2,12 @@ cmake_minimum_required(VERSION 3.4.1)
 
 enable_language(ASM C)
 
-set(MonkCDir           src/main/native/MonkC)
-set(SOILDir            src/main/native/BEAssets/external/SOIL)
-set(BEAssetsDir        src/main/native/BEAssets)
-set(BackendDir         src/main/native/Backend/OpenGL)
-set(BEEngineDir        src/main/native/Engine)
-set(InterfaceDir       src/main/native/Interface)
+set(SOILDir            src/main/native/External/SOIL)
+set(MonkCDir           src/main/native/Classes/MonkC)
+set(BEAssetsDir        src/main/native/Classes/BEAssets)
+set(BackendDir         src/main/native/Classes/Backend/OpenGL)
+set(BEEngineDir        src/main/native/Classes/Engine)
+set(InterfaceDir       src/main/native/Classes/Interface)
 set(AppDir             src/main/native/App)
 
 # Monk-C
